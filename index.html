@@ -138,10 +138,6 @@
             color: #f87171;
             font-weight: 600;
         }
-        .status-msg .warning {
-            color: #fbbf24;
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
@@ -176,12 +172,13 @@
         const statusMsg = document.getElementById('statusMsg');
 
         // ===== CẤU HÌNH =====
-        const KEYS_URL = 'Keys.json';
+        // Link raw của keys.json trên GitHub
+        const KEYS_URL = 'https://raw.githubusercontent.com/Huyyeumy/Website-/refs/heads/main/Keys.json';
 
         // ===== STATE =====
         let keysData = null;
-        let isLoading = false;
         let fileLoaded = false;
+        let isLoading = false;
 
         // ===== LẤY NGÀY HIỆN TẠI =====
         function getToday() {
@@ -199,7 +196,7 @@
             isLoading = true;
 
             try {
-                console.log('🔄 Đang tải keys.json...');
+                console.log('🔄 Đang tải keys.json từ GitHub...');
                 const response = await fetch(KEYS_URL, {
                     cache: 'no-cache',
                     headers: {
@@ -213,7 +210,6 @@
 
                 const text = await response.text();
 
-                // Kiểm tra file rỗng
                 if (!text || text.trim() === '' || text.trim() === '{}') {
                     console.log('⚠️ File keys.json rỗng!');
                     keysData = {};
@@ -241,12 +237,10 @@
             if (!keysData) return false;
             const today = getToday();
 
-            // Kiểm tra keysData có phải object không
             if (typeof keysData !== 'object' || Array.isArray(keysData)) {
                 return false;
             }
 
-            // Kiểm tra có key cho ngày hôm nay không
             const keys = keysData[today];
             if (keys && Array.isArray(keys) && keys.length > 0) {
                 return true;
@@ -276,7 +270,6 @@
             const today = getToday();
             const hour = getCurrentHour();
 
-            // Lấy key đã nhận trong giờ này
             const receivedKey = localStorage.getItem('received_key_' + today + '_' + hour);
 
             if (receivedKey) {
@@ -324,7 +317,6 @@
                 'success': '<span class="success">' + message + '</span>',
                 'error': '<span class="error">' + message + '</span>',
                 'highlight': '<span class="highlight">' + message + '</span>',
-                'warning': '<span class="warning">' + message + '</span>',
             };
             statusMsg.innerHTML = map[type] || message;
         }
@@ -352,7 +344,6 @@
         function handleNoKey() {
             keyDisplay.classList.add('hidden');
 
-            // Trường hợp 1: Đang tải
             if (!fileLoaded) {
                 getKeyBtn.textContent = '🔄 Đang tải...';
                 getKeyBtn.disabled = true;
@@ -361,7 +352,6 @@
                 return;
             }
 
-            // Trường hợp 2: File keys.json rỗng hoặc không có dữ liệu
             if (!keysData || Object.keys(keysData).length === 0) {
                 getKeyBtn.textContent = '🚫 Không có key';
                 getKeyBtn.disabled = true;
@@ -371,7 +361,6 @@
                 return;
             }
 
-            // Trường hợp 3: Không có key cho ngày hôm nay
             if (!hasKeysForToday()) {
                 getKeyBtn.textContent = '🚫 Không có key';
                 getKeyBtn.disabled = true;
@@ -381,7 +370,6 @@
                 return;
             }
 
-            // Trường hợp 4: Đã hết key
             const availableKey = getAvailableKey();
             if (!availableKey) {
                 getKeyBtn.textContent = '🚫 Hết key';
@@ -392,7 +380,6 @@
                 return;
             }
 
-            // Trường hợp 5: Còn key
             getKeyBtn.textContent = '🎯 Get Key';
             getKeyBtn.disabled = false;
             getKeyBtn.className = 'btn';
@@ -469,10 +456,8 @@
 
         // ===== KHỞI TẠO TRANG =====
         async function init() {
-            // Tải keys.json
             await loadKeysData();
 
-            // Kiểm tra đã nhận key trong giờ này chưa
             const today = getToday();
             const hour = getCurrentHour();
             const saved = localStorage.getItem('received_key_' + today + '_' + hour);
@@ -489,7 +474,6 @@
 
             handleNoKey();
 
-            // Kiểm tra reset mỗi phút
             setInterval(function() {
                 const currentHour = getCurrentHour();
                 const today = getToday();
@@ -507,7 +491,6 @@
                 }
             }, 60000);
 
-            // Tải lại keys.json mỗi 5 phút
             setInterval(async function() {
                 await loadKeysData();
                 if (!hasKeysForToday() || !keysData || Object.keys(keysData).length === 0) {
