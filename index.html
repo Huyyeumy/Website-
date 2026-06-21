@@ -25,7 +25,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
             padding: 40px;
-            max-width: 500px;
+            max-width: 450px;
             width: 100%;
             text-align: center;
         }
@@ -45,7 +45,6 @@
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
         .btn-success { background: linear-gradient(135deg, #4ade80, #22c55e); box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3); }
         .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15); box-shadow: none; }
-        .btn-secondary:hover { background: rgba(255,255,255,0.15); box-shadow: none; }
         
         .key-display {
             background: rgba(0,0,0,0.3); border-radius: 12px; padding: 14px; margin: 20px 0;
@@ -53,39 +52,26 @@
             color: #facc15; border: 1px dashed rgba(250,204,21,0.3); word-break: break-all;
             user-select: all;
         }
-        .key-display .label { display: block; font-size: 12px; color: #94a3b8; font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 400; margin-bottom: 6px; }
+        .key-display .label { display: block; font-size: 12px; color: #94a3b8; font-weight: 400; margin-bottom: 6px; }
         .hidden { display: none !important; }
         .copy-hint { font-size: 12px; color: #64748b; margin-top: 8px; }
         
         .status-msg {
-            font-size: 14px;
-            color: #94a3b8;
-            margin: 15px 0;
-            padding: 12px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            border-left: 3px solid #64748b;
+            font-size: 14px; color: #94a3b8; margin: 15px 0; padding: 12px;
+            background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid #64748b;
         }
         .status-msg.success { border-left-color: #4ade80; color: #4ade80; }
         .status-msg.error { border-left-color: #f87171; color: #f87171; }
         .status-msg.warning { border-left-color: #facc15; color: #facc15; }
-        .status-msg.info { border-left-color: #60a5fa; color: #60a5fa; }
         
         .debug-box {
-            margin-top: 15px;
-            padding: 12px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 8px;
-            text-align: left;
-            font-size: 12px;
-            font-family: 'Courier New', monospace;
-            color: #94a3b8;
-            line-height: 1.8;
+            margin-top: 15px; padding: 12px; background: rgba(0,0,0,0.4); border-radius: 8px;
+            text-align: left; font-size: 12px; font-family: 'Courier New', monospace;
+            color: #94a3b8; line-height: 1.8;
         }
         .debug-box .label { color: #64748b; }
         .debug-box .value { color: #facc15; }
         .debug-box .error-text { color: #f87171; }
-        .debug-box .success-text { color: #4ade80; }
     </style>
 </head>
 <body>
@@ -95,26 +81,20 @@
         <h1>KEY SYSTEM</h1>
         <p class="subtitle">Nhấn nút bên dưới để nhận key</p>
 
-        <div id="statusMsg" class="status-msg">
-            ⏳ Đang kiểm tra...
-        </div>
+        <div id="statusMsg" class="status-msg">⏳ Đang kiểm tra...</div>
 
         <div id="keyDisplay" class="key-display hidden">
             <span class="label">🔑 KEY CỦA BẠN</span>
             <span id="keyValue"></span>
         </div>
 
-        <button id="getKeyBtn" class="btn">
-            🎯 Get Key
-        </button>
-
+        <button id="getKeyBtn" class="btn">🎯 Get Key</button>
         <div class="copy-hint" id="copyHint">💡 Click vào key để copy</div>
 
         <div id="debugBox" class="debug-box">
-            <div><span class="label">📂 Đường dẫn:</span> <span class="value" id="debugPath">--</span></div>
+            <div><span class="label">📂 Đường dẫn:</span> <span class="value" id="debugPath">Keys.json</span></div>
             <div><span class="label">📅 Ngày hôm nay:</span> <span class="value" id="debugToday">--</span></div>
             <div><span class="label">📋 Trạng thái:</span> <span id="debugStatus">⏳ Đang tải...</span></div>
-            <div id="debugError" style="display:none;"><span class="label">❌ Lỗi:</span> <span class="error-text" id="debugErrorText"></span></div>
             <div id="debugKeys" style="display:none;"><span class="label">🔑 Key trong ngày:</span> <span class="value" id="debugKeysCount">0</span></div>
         </div>
     </div>
@@ -129,43 +109,16 @@
         const debugPath = document.getElementById('debugPath');
         const debugToday = document.getElementById('debugToday');
         const debugStatus = document.getElementById('debugStatus');
-        const debugError = document.getElementById('debugError');
-        const debugErrorText = document.getElementById('debugErrorText');
         const debugKeys = document.getElementById('debugKeys');
         const debugKeysCount = document.getElementById('debugKeysCount');
 
         // ===== CẤU HÌNH =====
-        // Link raw GitHub của Keys.json
-        const KEYS_URL = 'https://raw.githubusercontent.com/Huyyeumy/Website-/refs/heads/main/Keys.json';
-
-        // ===== KEY MẪU DỰ PHÒNG (NẾU KHÔNG TẢI ĐƯỢC) =====
-        const FALLBACK_KEYS = {
-            "2026-06-22": [
-                "FREE_A1B2C3D4E5",
-                "FREE_F6G7H8I9J0",
-                "FREE_K1L2M3N4O5",
-                "FREE_P6Q7R8S9T0",
-                "FREE_U1V2W3X4Y5",
-                "FREE_Z6A7B8C9D0",
-                "FREE_E1F2G3H4I5",
-                "FREE_J6K7L8M9N0",
-                "FREE_O1P2Q3R4S5",
-                "FREE_T6U7V8W9X0"
-            ],
-            "2026-06-23": [
-                "FREE_W1X2Y3Z4A5",
-                "FREE_B6C7D8E9F0",
-                "FREE_G1H2I3J4K5",
-                "FREE_L6M7N8O9P0",
-                "FREE_Q1R2S3T4U5"
-            ]
-        };
+        const KEYS_URL = 'Keys.json';
 
         // ===== STATE =====
         let keysData = null;
         let fileLoaded = false;
         let loadError = null;
-        let usingFallback = false;
 
         // ===== LẤY NGÀY HIỆN TẠI =====
         function getToday() {
@@ -178,28 +131,17 @@
         }
 
         // ===== CẬP NHẬT DEBUG =====
-        function updateDebug(status, error = null, keysCount = null) {
-            debugPath.textContent = KEYS_URL;
+        function updateDebug(status, keysCount = null) {
             debugToday.textContent = getToday();
             debugStatus.textContent = status || 'Đang tải...';
-
-            if (error) {
-                debugError.style.display = 'block';
-                debugErrorText.textContent = error;
-            } else {
-                debugError.style.display = 'none';
-            }
-
             if (keysCount !== null) {
                 debugKeys.style.display = 'block';
                 debugKeysCount.textContent = keysCount;
-            } else {
-                debugKeys.style.display = 'none';
             }
         }
 
         // ===== CẬP NHẬT TRẠNG THÁI =====
-        function updateStatus(message, type = 'info') {
+        function updateStatus(message, type = 'warning') {
             statusMsg.textContent = message;
             statusMsg.className = 'status-msg ' + type;
         }
@@ -207,9 +149,9 @@
         // ===== LẤY KEY TỪ FILE JSON =====
         async function loadKeysData() {
             try {
-                updateDebug('⏳ Đang tải từ GitHub...');
-                updateStatus('⏳ Đang tải dữ liệu key từ GitHub...', 'info');
-                console.log('🔄 Đang tải Keys.json từ GitHub...');
+                debugPath.textContent = KEYS_URL;
+                updateDebug('⏳ Đang tải...');
+                updateStatus('⏳ Đang tải dữ liệu key...', 'warning');
 
                 const response = await fetch(KEYS_URL, {
                     cache: 'no-cache',
@@ -217,12 +159,10 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('HTTP ' + response.status + ' - ' + response.statusText);
+                    throw new Error('HTTP ' + response.status);
                 }
 
                 const text = await response.text();
-                console.log('📄 Nội dung file:', text.substring(0, 200) + '...');
-
                 if (!text || text.trim() === '' || text.trim() === '{}') {
                     throw new Error('File Keys.json rỗng');
                 }
@@ -230,31 +170,18 @@
                 keysData = JSON.parse(text);
                 fileLoaded = true;
                 loadError = null;
-                usingFallback = false;
 
-                const totalKeys = Object.keys(keysData).length;
                 const todayKeys = keysData[getToday()] ? keysData[getToday()].length : 0;
-
-                console.log('✅ Đã tải Keys.json thành công!');
-                console.log('📋 Tổng số ngày có key:', totalKeys);
-
-                updateDebug('✅ Đã tải thành công (GitHub)', null, todayKeys);
+                updateDebug('✅ Đã tải thành công', todayKeys);
                 updateStatus('✅ Đã tải dữ liệu key thành công!', 'success');
                 return true;
             } catch (error) {
-                console.error('❌ Lỗi tải từ GitHub:', error.message);
-
-                // DÙNG KEY MẪU DỰ PHÒNG
-                console.log('⚠️ Chuyển sang dùng key mẫu dự phòng...');
-                keysData = FALLBACK_KEYS;
-                fileLoaded = true;
-                loadError = null;
-                usingFallback = true;
-
-                const todayKeys = keysData[getToday()] ? keysData[getToday()].length : 0;
-                updateDebug('⚠️ Đang dùng key mẫu (không tải được GitHub)', 'Không tải được từ GitHub, dùng key mẫu', todayKeys);
-                updateStatus('⚠️ Đang dùng key mẫu dự phòng (không tải được từ GitHub)', 'warning');
-                return true;
+                keysData = null;
+                fileLoaded = false;
+                loadError = error.message;
+                updateDebug('❌ Lỗi: ' + error.message);
+                updateStatus('❌ Lỗi: ' + error.message, 'error');
+                return false;
             }
         }
 
@@ -262,29 +189,17 @@
         function hasKeysForToday() {
             if (!keysData) return false;
             const today = getToday();
-
-            if (typeof keysData !== 'object' || Array.isArray(keysData)) {
-                return false;
-            }
-
             const keys = keysData[today];
-            if (keys && Array.isArray(keys) && keys.length > 0) {
-                return true;
-            }
-
-            return false;
+            return keys && Array.isArray(keys) && keys.length > 0;
         }
 
         // ===== LẤY KEY CHO NGÀY HÔM NAY =====
         function getKeysForToday() {
             if (!keysData) return null;
             const today = getToday();
-
-            if (keysData[today] && Array.isArray(keysData[today]) && keysData[today].length > 0) {
-                return keysData[today];
-            }
-
-            return null;
+            return (keysData[today] && Array.isArray(keysData[today]) && keysData[today].length > 0) 
+                ? keysData[today] 
+                : null;
         }
 
         // ===== LẤY KEY CHƯA DÙNG =====
@@ -293,10 +208,7 @@
             if (!keys || keys.length === 0) return null;
 
             const usedKeys = JSON.parse(localStorage.getItem('used_keys_' + getToday()) || '[]');
-            const today = getToday();
-            const hour = getCurrentHour();
-
-            const receivedKey = localStorage.getItem('received_key_' + today + '_' + hour);
+            const receivedKey = localStorage.getItem('received_key_' + getToday() + '_' + getCurrentHour());
 
             if (receivedKey) {
                 try {
@@ -312,7 +224,6 @@
                     return key;
                 }
             }
-
             return null;
         }
 
@@ -324,23 +235,13 @@
                 usedKeys.push(key);
                 localStorage.setItem('used_keys_' + today, JSON.stringify(usedKeys));
             }
-
-            const hour = getCurrentHour();
-            localStorage.setItem('received_key_' + today + '_' + hour, JSON.stringify({ key: key }));
-        }
-
-        // ===== KIỂM TRA KEY ĐÃ DÙNG =====
-        function isKeyUsed(key) {
-            const today = getToday();
-            const usedKeys = JSON.parse(localStorage.getItem('used_keys_' + today) || '[]');
-            return usedKeys.includes(key);
+            localStorage.setItem('received_key_' + today + '_' + getCurrentHour(), JSON.stringify({ key: key }));
         }
 
         // ===== HIỂN THỊ KEY =====
         function showKey(key, isNew = false) {
             keyValue.textContent = key;
             keyDisplay.classList.remove('hidden');
-
             if (isNew) {
                 getKeyBtn.textContent = '✅ Đã nhận key';
                 getKeyBtn.disabled = true;
@@ -350,7 +251,7 @@
                 getKeyBtn.textContent = '✅ Đã nhận key';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-success';
-                updateStatus('📌 Key của bạn.', 'info');
+                updateStatus('📌 Key của bạn.', 'success');
             }
             copyHint.textContent = '💡 Click vào key để copy';
         }
@@ -363,7 +264,7 @@
                 getKeyBtn.textContent = '🔄 Đang tải...';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn';
-                updateStatus('⏳ Đang tải dữ liệu key...', 'info');
+                updateStatus('⏳ Đang tải dữ liệu key...', 'warning');
                 return;
             }
 
@@ -384,12 +285,10 @@
             }
 
             if (!hasKeysForToday()) {
-                const today = getToday();
                 getKeyBtn.textContent = '📅 Chưa có key';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-secondary';
-                updateStatus('❌ Chưa có key cho ngày ' + today + '.', 'error');
-                copyHint.textContent = '📅 Vui lòng quay lại vào ngày khác.';
+                updateStatus('❌ Chưa có key cho ngày ' + getToday(), 'error');
                 return;
             }
 
@@ -399,7 +298,6 @@
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-secondary';
                 updateStatus('❌ Đã hết key cho ngày hôm nay.', 'error');
-                copyHint.textContent = '⏰ Vui lòng quay lại ngày mai.';
                 return;
             }
 
@@ -414,16 +312,11 @@
         keyDisplay.addEventListener('click', function() {
             const key = keyValue.textContent;
             if (!key) return;
-
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(key).then(() => {
                     copyHint.textContent = '✅ Đã copy key!';
-                    setTimeout(() => {
-                        copyHint.textContent = '💡 Click vào key để copy';
-                    }, 2000);
-                }).catch(() => {
-                    copyFallback(key);
-                });
+                    setTimeout(() => { copyHint.textContent = '💡 Click vào key để copy'; }, 2000);
+                }).catch(() => { copyFallback(key); });
             } else {
                 copyFallback(key);
             }
@@ -435,44 +328,20 @@
             textarea.style.cssText = 'position:fixed;opacity:0;';
             document.body.appendChild(textarea);
             textarea.select();
-            try {
-                document.execCommand('copy');
-                copyHint.textContent = '✅ Đã copy key!';
-                setTimeout(() => {
-                    copyHint.textContent = '💡 Click vào key để copy';
-                }, 2000);
-            } catch (e) {}
+            try { document.execCommand('copy'); } catch (e) {}
             document.body.removeChild(textarea);
+            copyHint.textContent = '✅ Đã copy key!';
+            setTimeout(() => { copyHint.textContent = '💡 Click vào key để copy'; }, 2000);
         }
 
         // ===== XỬ LÝ BẤM NÚT GET KEY =====
         getKeyBtn.addEventListener('click', function() {
-            if (!fileLoaded || loadError) {
+            if (!fileLoaded || loadError || !keysData || !hasKeysForToday()) {
                 handleNoKey();
                 return;
             }
-
-            if (!keysData || Object.keys(keysData).length === 0) {
-                handleNoKey();
-                return;
-            }
-
-            if (!hasKeysForToday()) {
-                handleNoKey();
-                return;
-            }
-
             const availableKey = getAvailableKey();
-            if (!availableKey) {
-                handleNoKey();
-                return;
-            }
-
-            if (isKeyUsed(availableKey)) {
-                handleNoKey();
-                return;
-            }
-
+            if (!availableKey) { handleNoKey(); return; }
             markKeyUsed(availableKey);
             showKey(availableKey, true);
         });
@@ -482,45 +351,22 @@
             debugToday.textContent = getToday();
             await loadKeysData();
 
-            const today = getToday();
-            const hour = getCurrentHour();
-            const saved = localStorage.getItem('received_key_' + today + '_' + hour);
-
+            const saved = localStorage.getItem('received_key_' + getToday() + '_' + getCurrentHour());
             if (saved && fileLoaded && keysData && hasKeysForToday()) {
                 try {
                     const keyData = JSON.parse(saved);
-                    if (keyData && keyData.key && !isKeyUsed(keyData.key)) {
+                    if (keyData && keyData.key) {
                         showKey(keyData.key, false);
                         return;
                     }
                 } catch (e) {}
             }
-
             handleNoKey();
 
-            setInterval(function() {
-                const currentHour = getCurrentHour();
-                const today = getToday();
-                const savedKey = localStorage.getItem('received_key_' + today + '_' + currentHour);
-
-                if (!savedKey) {
-                    handleNoKey();
-                } else {
-                    try {
-                        const data = JSON.parse(savedKey);
-                        if (data && data.key && isKeyUsed(data.key)) {
-                            handleNoKey();
-                        }
-                    } catch (e) {}
-                }
+            setInterval(() => {
+                const savedKey = localStorage.getItem('received_key_' + getToday() + '_' + getCurrentHour());
+                if (!savedKey) handleNoKey();
             }, 60000);
-
-            setInterval(async function() {
-                await loadKeysData();
-                if (!hasKeysForToday() || !keysData || Object.keys(keysData).length === 0) {
-                    handleNoKey();
-                }
-            }, 300000);
         }
 
         init();
