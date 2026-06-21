@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Key System - Bear Hub</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body {
             min-height: 100vh;
             background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
@@ -20,131 +15,56 @@
             padding: 20px;
         }
         .container {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.05);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 24px;
             padding: 40px;
             max-width: 500px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        .lock-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            display: block;
-        }
-        h1 {
-            color: #fff;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-        .subtitle {
-            color: #94a3b8;
-            font-size: 15px;
-            margin-bottom: 30px;
-        }
+        .lock-icon { font-size: 64px; margin-bottom: 20px; display: block; }
+        h1 { color: #fff; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { color: #94a3b8; font-size: 15px; margin-bottom: 30px; }
+        
         .status-box {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.05);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255,255,255,0.06);
         }
-        .status-box .label {
-            color: #94a3b8;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        .status-box .value {
-            color: #fff;
-            font-size: 22px;
-            font-weight: 600;
-        }
-        .status-box .value .highlight {
-            color: #facc15;
-        }
+        .status-box .label { color: #94a3b8; font-size: 13px; text-transform: uppercase; margin-bottom: 4px; }
+        .status-box .value { color: #fff; font-size: 22px; font-weight: 600; }
+        .status-box .value .highlight { color: #facc15; }
+        .status-box .value .success { color: #4ade80; }
+        .status-box .value .error { color: #f87171; }
+        
         .btn {
-            display: inline-block;
-            padding: 14px 32px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            width: 100%;
-            color: #0a0a1a;
+            display: inline-block; padding: 14px 32px; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+            text-decoration: none; width: 100%; color: #0a0a1a;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #facc15, #f59e0b);
-            box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(250, 204, 21, 0.4);
-        }
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-        .btn-success {
-            background: linear-gradient(135deg, #4ade80, #22c55e);
-            box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
-            color: #0a0a1a;
-        }
+        .btn-primary { background: linear-gradient(135deg, #facc15, #f59e0b); box-shadow: 0 4px 15px rgba(250,204,21,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(250,204,21,0.4); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-success { background: linear-gradient(135deg, #4ade80, #22c55e); box-shadow: 0 4px 15px rgba(74,222,128,0.3); color: #0a0a1a; }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(74,222,128,0.4); }
+        
         .key-display {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            padding: 14px;
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 18px;
-            font-weight: 600;
-            color: #facc15;
-            border: 1px dashed rgba(250, 204, 21, 0.3);
-            word-break: break-all;
+            background: rgba(0,0,0,0.3); border-radius: 12px; padding: 14px; margin: 20px 0;
+            font-family: 'Courier New', monospace; font-size: 18px; font-weight: 600;
+            color: #facc15; border: 1px dashed rgba(250,204,21,0.3); word-break: break-all;
         }
-        .error-message {
-            color: #f87171;
+        .timer {
             font-size: 14px;
-            margin-top: 12px;
-            padding: 10px;
-            background: rgba(248, 113, 113, 0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(248, 113, 113, 0.2);
-        }
-        .footer {
-            margin-top: 25px;
-            font-size: 12px;
-            color: #475569;
-        }
-        .footer a {
-            color: #64748b;
-            text-decoration: none;
-        }
-        .footer a:hover {
             color: #94a3b8;
-            text-decoration: underline;
+            margin-top: 15px;
         }
-        .hidden {
-            display: none !important;
-        }
+        .timer span { color: #facc15; font-weight: 600; }
+        .footer { margin-top: 25px; font-size: 12px; color: #475569; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -154,7 +74,6 @@
         <h1>BEAR KEY SYSTEM</h1>
         <p class="subtitle">Nhận key truy cập độc quyền</p>
 
-        <!-- Trạng thái -->
         <div class="status-box">
             <div class="label">Trạng thái</div>
             <div class="value" id="statusText">
@@ -162,21 +81,18 @@
             </div>
         </div>
 
-        <!-- Key hiển thị -->
-        <div id="keyDisplay" class="key-display hidden">
-            <!-- Key sẽ hiển thị ở đây -->
-        </div>
+        <div id="keyDisplay" class="key-display hidden"></div>
 
-        <!-- Nút hành động -->
         <button id="actionBtn" class="btn btn-primary" disabled>
             Đang tải...
         </button>
 
-        <!-- Thông báo lỗi -->
-        <div id="errorMessage" class="error-message hidden"></div>
+        <div class="timer" id="timerDisplay">
+            ⏰ Key mới sau: <span id="countdown">--:--</span>
+        </div>
 
         <div class="footer">
-            <span>🔒 Bảo mật &amp; giới hạn 1 key/phiên</span>
+            <span>🔒 Mỗi lần tải lại trang sẽ có key mới</span>
         </div>
     </div>
 
@@ -186,65 +102,49 @@
 
             // ----- CẤU HÌNH -----
             const CONFIG = {
-                // Trang web nguồn cho phép (cần chính xác tuyệt đối)
-                ALLOWED_REFERRER: 'https://pro.tapvietcode.com/bi-kip-on-thi-trac-nghiem-hieu-qua-day-du-nhanh-nhat-cho-sinh-vien/',
-                // Link đích khi bấm "Get Key"
                 TARGET_URL: 'https://link4sub.com/DaPSaLCo2S',
-                // Thời gian chờ reset (1 giờ = 3600000 ms)
-                RESET_TIME: 3600000,
+                KEY_DURATION: 3600000, // 1 giờ = 3600000 ms
             };
 
-            // ----- DOM REFS -----
+            // ----- DOM -----
             const statusText = document.getElementById('statusText');
             const keyDisplay = document.getElementById('keyDisplay');
             const actionBtn = document.getElementById('actionBtn');
-            const errorMessage = document.getElementById('errorMessage');
+            const countdownEl = document.getElementById('countdown');
 
-            // ----- STATE -----
-            let keyData = null; // Lưu key và thời gian tạo
+            let keyData = null;
             let timerInterval = null;
 
             // ----- UTILITY -----
-            function showError(msg) {
-                errorMessage.textContent = msg;
-                errorMessage.classList.remove('hidden');
-            }
-
-            function hideError() {
-                errorMessage.classList.add('hidden');
-            }
-
-            function updateStatus(text, isHighlight = false) {
-                statusText.innerHTML = isHighlight ?
-                    `<span class="highlight">${text}</span>` :
-                    text;
+            function updateStatus(text, type = 'normal') {
+                const map = {
+                    'normal': text,
+                    'success': '<span class="success">' + text + '</span>',
+                    'error': '<span class="error">' + text + '</span>',
+                    'highlight': '<span class="highlight">' + text + '</span>',
+                };
+                statusText.innerHTML = map[type] || text;
             }
 
             function setButton(text, disabled = false, className = 'btn-primary') {
                 actionBtn.textContent = text;
                 actionBtn.disabled = disabled;
-                actionBtn.className = `btn ${className}`;
+                actionBtn.className = 'btn ' + className;
             }
 
             function displayKey(key) {
                 keyDisplay.textContent = key;
                 keyDisplay.classList.remove('hidden');
             }
+            function hideKey() { keyDisplay.classList.add('hidden'); }
 
-            function hideKey() {
-                keyDisplay.classList.add('hidden');
+            function showTimer(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                countdownEl.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
             }
 
-            // ----- LOGIC CHÍNH -----
-
-            // 1. Kiểm tra Referrer
-            function checkReferrer() {
-                const referrer = document.referrer;
-                // So sánh chính xác (bao gồm cả dấu "/" cuối)
-                return referrer === CONFIG.ALLOWED_REFERRER;
-            }
-
-            // 2. Tạo key ngẫu nhiên
+            // ----- GENERATE KEY -----
             function generateKey() {
                 const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
                 let key = 'KEY-';
@@ -254,83 +154,74 @@
                 return key;
             }
 
-            // 3. Lưu key vào sessionStorage
+            // ----- SESSION -----
             function saveKeyToSession(key) {
-                keyData = {
-                    value: key,
-                    timestamp: Date.now()
-                };
-                try {
-                    sessionStorage.setItem('bear_key_data', JSON.stringify(keyData));
-                } catch (e) {
-                    // Bỏ qua lỗi storage
-                }
+                keyData = { value: key, timestamp: Date.now() };
+                try { sessionStorage.setItem('bear_key_data', JSON.stringify(keyData)); } catch (e) {}
             }
 
-            // 4. Đọc key từ sessionStorage
             function loadKeyFromSession() {
                 try {
                     const raw = sessionStorage.getItem('bear_key_data');
                     if (!raw) return null;
                     const data = JSON.parse(raw);
-                    if (data && data.value && data.timestamp) {
-                        return data;
-                    }
+                    if (data && data.value && data.timestamp) return data;
                     return null;
-                } catch (e) {
-                    return null;
-                }
+                } catch (e) { return null; }
             }
 
-            // 5. Xóa key khỏi sessionStorage
             function clearKeyFromSession() {
-                try {
-                    sessionStorage.removeItem('bear_key_data');
-                } catch (e) { /* bỏ qua */ }
+                try { sessionStorage.removeItem('bear_key_data'); } catch (e) {}
                 keyData = null;
             }
 
-            // 6. Kiểm tra key còn hiệu lực (trong vòng 1 tiếng)
             function isKeyValid(data) {
                 if (!data) return false;
-                const now = Date.now();
-                return (now - data.timestamp) < CONFIG.RESET_TIME;
+                return (Date.now() - data.timestamp) < CONFIG.KEY_DURATION;
             }
 
-            // 7. Xử lý khi key hết hạn hoặc không có key
+            function getRemainingTime(data) {
+                if (!data) return 0;
+                const elapsed = Date.now() - data.timestamp;
+                const remaining = CONFIG.KEY_DURATION - elapsed;
+                return Math.max(0, Math.floor(remaining / 1000));
+            }
+
+            // ----- MAIN LOGIC -----
             function handleNoValidKey() {
                 hideKey();
                 clearKeyFromSession();
-
-                const isFromAllowedSite = checkReferrer();
-
-                if (isFromAllowedSite) {
-                    // Cho phép lấy key mới
-                    updateStatus('✅ Sẵn sàng nhận key', true);
-                    setButton('🎯 Get Key', false, 'btn-primary');
-                    hideError();
-                } else {
-                    // Không cho phép
-                    updateStatus('⛔ Truy cập bị từ chối', false);
-                    setButton('🚫 Không thể lấy key', true, 'btn-secondary');
-                    showError('⚠️ Vui lòng truy cập từ trang web chính thức để nhận key.');
+                updateStatus('🔄 Sẵn sàng lấy key mới', 'highlight');
+                setButton('🎯 Get Key', false, 'btn-primary');
+                showTimer(0);
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
                 }
             }
 
-            // 8. Xử lý khi có key hợp lệ
-            function handleValidKey(keyVal) {
+            function handleValidKey(keyVal, remainingSeconds) {
                 displayKey(keyVal);
-                updateStatus('🔑 Key đã sẵn sàng', true);
+                updateStatus('🔑 Key đã sẵn sàng', 'success');
                 setButton('📋 Copy Key & Tiếp tục', false, 'btn-success');
-                hideError();
+                showTimer(remainingSeconds);
 
-                // Lưu lại để đồng bộ
-                if (!keyData || keyData.value !== keyVal) {
-                    saveKeyToSession(keyVal);
-                }
+                // Đếm ngược
+                if (timerInterval) clearInterval(timerInterval);
+                let seconds = remainingSeconds;
+                timerInterval = setInterval(() => {
+                    seconds--;
+                    if (seconds <= 0) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        // Key hết hạn, reset
+                        handleNoValidKey();
+                    } else {
+                        showTimer(seconds);
+                    }
+                }, 1000);
             }
 
-            // 9. Reset trạng thái (khi hết hạn hoặc lỗi)
             function resetState() {
                 if (timerInterval) {
                     clearInterval(timerInterval);
@@ -340,113 +231,78 @@
                 handleNoValidKey();
             }
 
-            // 10. Xử lý sự kiện "Get Key" / "Copy Key"
             function handleAction() {
                 const currentText = actionBtn.textContent;
 
-                // Nếu là nút "Get Key"
                 if (currentText.includes('Get Key')) {
-                    // Kiểm tra lại referrer (phòng trường hợp bị lách)
-                    if (!checkReferrer()) {
-                        handleNoValidKey(); // reset và báo lỗi
-                        return;
-                    }
-
-                    // Tạo key mới
                     const newKey = generateKey();
                     saveKeyToSession(newKey);
-                    handleValidKey(newKey);
-
-                    // Chuyển hướng sau 1.5 giây
+                    handleValidKey(newKey, Math.floor(CONFIG.KEY_DURATION / 1000));
                     setTimeout(() => {
                         window.location.href = CONFIG.TARGET_URL;
                     }, 1500);
-
                     return;
                 }
 
-                // Nếu là nút "Copy Key & Tiếp tục"
                 if (currentText.includes('Copy Key')) {
                     const key = keyData ? keyData.value : null;
                     if (key) {
-                        // Copy vào clipboard
                         if (navigator.clipboard && navigator.clipboard.writeText) {
-                            navigator.clipboard.writeText(key).catch(() => {
-                                // Fallback
-                                copyFallback(key);
-                            });
+                            navigator.clipboard.writeText(key).catch(() => { copyFallback(key); });
                         } else {
                             copyFallback(key);
                         }
-                        // Chuyển hướng
                         setTimeout(() => {
                             window.location.href = CONFIG.TARGET_URL;
                         }, 500);
                     } else {
-                        // Nếu không có key, reset
                         resetState();
                     }
                     return;
                 }
-
-                // Fallback: reset
                 resetState();
             }
 
-            // Fallback copy
             function copyFallback(text) {
                 const textarea = document.createElement('textarea');
                 textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
+                textarea.style.cssText = 'position:fixed;opacity:0;';
                 document.body.appendChild(textarea);
                 textarea.select();
-                try {
-                    document.execCommand('copy');
-                } catch (e) { /* bỏ qua */ }
+                try { document.execCommand('copy'); } catch (e) {}
                 document.body.removeChild(textarea);
             }
 
-            // 11. Khởi tạo và kiểm tra trạng thái
+            // ----- INIT -----
             function init() {
-                // Kiểm tra key đã lưu trong session
                 const saved = loadKeyFromSession();
 
                 if (saved && isKeyValid(saved)) {
-                    // Có key hợp lệ
-                    handleValidKey(saved.value);
-
-                    // Thiết lập timer kiểm tra hết hạn
-                    const remaining = CONFIG.RESET_TIME - (Date.now() - saved.timestamp);
-                    if (remaining > 0) {
-                        timerInterval = setTimeout(() => {
-                            resetState();
-                        }, remaining);
-                    } else {
-                        resetState();
-                    }
+                    const remaining = getRemainingTime(saved);
+                    handleValidKey(saved.value, remaining);
                 } else {
-                    // Không có key hoặc key hết hạn
-                    // Xóa key cũ nếu có
-                    if (saved) {
-                        clearKeyFromSession();
-                    }
+                    if (saved) clearKeyFromSession();
                     handleNoValidKey();
                 }
 
-                // Gán sự kiện cho nút
                 actionBtn.addEventListener('click', handleAction);
+
+                // Khi trang được tải lại (hoặc focus lại), kiểm tra lại key
+                document.addEventListener('visibilitychange', function() {
+                    if (!document.hidden) {
+                        const saved = loadKeyFromSession();
+                        if (saved && isKeyValid(saved)) {
+                            const remaining = getRemainingTime(saved);
+                            handleValidKey(saved.value, remaining);
+                        } else {
+                            if (saved) clearKeyFromSession();
+                            handleNoValidKey();
+                        }
+                    }
+                });
             }
 
-            // 12. Chạy
             init();
-
-            // 13. Xử lý khi trang bị đóng / tải lại
-            window.addEventListener('beforeunload', function() {
-                if (timerInterval) {
-                    clearTimeout(timerInterval);
-                }
-            });
 
         })();
     </script>
