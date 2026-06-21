@@ -172,8 +172,8 @@
         const statusMsg = document.getElementById('statusMsg');
 
         // ===== CẤU HÌNH =====
-        // Link raw của keys.json trên GitHub
-        const KEYS_URL = 'https://raw.githubusercontent.com/Huyyeumy/Website-/refs/heads/main/Keys.json';
+        // QUAN TRỌNG: Đường dẫn tương đối - file cùng thư mục
+        const KEYS_URL = 'Keys.json';
 
         // ===== STATE =====
         let keysData = null;
@@ -196,7 +196,9 @@
             isLoading = true;
 
             try {
-                console.log('🔄 Đang tải keys.json từ GitHub...');
+                console.log('🔄 Đang tải keys.json...');
+                console.log('📂 Đường dẫn:', KEYS_URL);
+
                 const response = await fetch(KEYS_URL, {
                     cache: 'no-cache',
                     headers: {
@@ -205,10 +207,11 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
+                    throw new Error('HTTP ' + response.status + ' - ' + response.statusText);
                 }
 
                 const text = await response.text();
+                console.log('📄 Nội dung file:', text.substring(0, 200) + '...');
 
                 if (!text || text.trim() === '' || text.trim() === '{}') {
                     console.log('⚠️ File keys.json rỗng!');
