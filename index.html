@@ -63,15 +63,6 @@
         .status-msg.success { border-left-color: #4ade80; color: #4ade80; }
         .status-msg.error { border-left-color: #f87171; color: #f87171; }
         .status-msg.warning { border-left-color: #facc15; color: #facc15; }
-        
-        .debug-box {
-            margin-top: 15px; padding: 12px; background: rgba(0,0,0,0.4); border-radius: 8px;
-            text-align: left; font-size: 12px; font-family: 'Courier New', monospace;
-            color: #94a3b8; line-height: 1.8;
-        }
-        .debug-box .label { color: #64748b; }
-        .debug-box .value { color: #facc15; }
-        .debug-box .error-text { color: #f87171; }
     </style>
 </head>
 <body>
@@ -90,13 +81,6 @@
 
         <button id="getKeyBtn" class="btn">🎯 Get Key</button>
         <div class="copy-hint" id="copyHint">💡 Click vào key để copy</div>
-
-        <div id="debugBox" class="debug-box">
-            <div><span class="label">📂 Đường dẫn:</span> <span class="value" id="debugPath">Keys.json</span></div>
-            <div><span class="label">📅 Ngày hôm nay:</span> <span class="value" id="debugToday">--</span></div>
-            <div><span class="label">📋 Trạng thái:</span> <span id="debugStatus">⏳ Đang tải...</span></div>
-            <div id="debugKeys" style="display:none;"><span class="label">🔑 Key trong ngày:</span> <span class="value" id="debugKeysCount">0</span></div>
-        </div>
     </div>
 
     <script>
@@ -106,103 +90,46 @@
         const keyValue = document.getElementById('keyValue');
         const copyHint = document.getElementById('copyHint');
         const statusMsg = document.getElementById('statusMsg');
-        const debugPath = document.getElementById('debugPath');
-        const debugToday = document.getElementById('debugToday');
-        const debugStatus = document.getElementById('debugStatus');
-        const debugKeys = document.getElementById('debugKeys');
-        const debugKeysCount = document.getElementById('debugKeysCount');
 
-        // ===== CẤU HÌNH =====
-        const KEYS_URL = 'Keys.json';
+        // =============================================
+        // 🔑 TẠO KEY THEO NGÀY (1-31) - Dùng cho tất cả tháng/năm
+        // Ngày lẻ (1,3,5,...): 1i và 3i
+        // Ngày chẵn (2,4,6,...): 2i và 4i
+        // =============================================
+        function getKeysByDay(day) {
+            const isOdd = day % 2 !== 0;
+            const key1 = isOdd ? 'Huydepzai' : 'Huydepzaii';      // 1i hoặc 2i
+            const key2 = isOdd ? 'Huydepzaiiii' : 'Huydepzaiiiii'; // 3i hoặc 4i
+            return [key1, key2];
+        }
 
-        // ===== STATE =====
-        let keysData = null;
-        let fileLoaded = false;
-        let loadError = null;
+        // Hàm lấy key cho ngày hôm nay (không cần pre-generated data)
+        function getKeysForTodayDynamic() {
+            const today = new Date();
+            const day = today.getDate(); // Lấy ngày trong tháng (1-31)
+            return getKeysByDay(day);
+        }
 
-        // ===== LẤY NGÀY HIỆN TẠI =====
+        // =============================================
+        // CODE XỬ LÝ KEY
+        // =============================================
         function getToday() {
             return new Date().toISOString().split('T')[0];
         }
 
-        // ===== LẤY GIỜ HIỆN TẠI =====
         function getCurrentHour() {
             return new Date().getHours();
         }
 
-        // ===== CẬP NHẬT DEBUG =====
-        function updateDebug(status, keysCount = null) {
-            debugToday.textContent = getToday();
-            debugStatus.textContent = status || 'Đang tải...';
-            if (keysCount !== null) {
-                debugKeys.style.display = 'block';
-                debugKeysCount.textContent = keysCount;
-            }
-        }
-
-        // ===== CẬP NHẬT TRẠNG THÁI =====
         function updateStatus(message, type = 'warning') {
             statusMsg.textContent = message;
             statusMsg.className = 'status-msg ' + type;
         }
 
-        // ===== LẤY KEY TỪ FILE JSON =====
-        async function loadKeysData() {
-            try {
-                debugPath.textContent = KEYS_URL;
-                updateDebug('⏳ Đang tải...');
-                updateStatus('⏳ Đang tải dữ liệu key...', 'warning');
-
-                const response = await fetch(KEYS_URL, {
-                    cache: 'no-cache',
-                    headers: { 'Accept': 'application/json' }
-                });
-
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-
-                const text = await response.text();
-                if (!text || text.trim() === '' || text.trim() === '{}') {
-                    throw new Error('File Keys.json rỗng');
-                }
-
-                keysData = JSON.parse(text);
-                fileLoaded = true;
-                loadError = null;
-
-                const todayKeys = keysData[getToday()] ? keysData[getToday()].length : 0;
-                updateDebug('✅ Đã tải thành công', todayKeys);
-                updateStatus('✅ Đã tải dữ liệu key thành công!', 'success');
-                return true;
-            } catch (error) {
-                keysData = null;
-                fileLoaded = false;
-                loadError = error.message;
-                updateDebug('❌ Lỗi: ' + error.message);
-                updateStatus('❌ Lỗi: ' + error.message, 'error');
-                return false;
-            }
-        }
-
-        // ===== KIỂM TRA CÓ KEY CHO NGÀY HÔM NAY =====
-        function hasKeysForToday() {
-            if (!keysData) return false;
-            const today = getToday();
-            const keys = keysData[today];
-            return keys && Array.isArray(keys) && keys.length > 0;
-        }
-
-        // ===== LẤY KEY CHO NGÀY HÔM NAY =====
         function getKeysForToday() {
-            if (!keysData) return null;
-            const today = getToday();
-            return (keysData[today] && Array.isArray(keysData[today]) && keysData[today].length > 0) 
-                ? keysData[today] 
-                : null;
+            return getKeysForTodayDynamic();
         }
 
-        // ===== LẤY KEY CHƯA DÙNG =====
         function getAvailableKey() {
             const keys = getKeysForToday();
             if (!keys || keys.length === 0) return null;
@@ -227,7 +154,6 @@
             return null;
         }
 
-        // ===== ĐÁNH DẤU KEY ĐÃ DÙNG =====
         function markKeyUsed(key) {
             const today = getToday();
             const usedKeys = JSON.parse(localStorage.getItem('used_keys_' + today) || '[]');
@@ -238,7 +164,6 @@
             localStorage.setItem('received_key_' + today + '_' + getCurrentHour(), JSON.stringify({ key: key }));
         }
 
-        // ===== HIỂN THỊ KEY =====
         function showKey(key, isNew = false) {
             keyValue.textContent = key;
             keyDisplay.classList.remove('hidden');
@@ -256,39 +181,15 @@
             copyHint.textContent = '💡 Click vào key để copy';
         }
 
-        // ===== XỬ LÝ KHI CHƯA CÓ KEY =====
         function handleNoKey() {
             keyDisplay.classList.add('hidden');
 
-            if (!fileLoaded) {
-                getKeyBtn.textContent = '🔄 Đang tải...';
-                getKeyBtn.disabled = true;
-                getKeyBtn.className = 'btn';
-                updateStatus('⏳ Đang tải dữ liệu key...', 'warning');
-                return;
-            }
-
-            if (loadError) {
-                getKeyBtn.textContent = '⚠️ Lỗi tải';
-                getKeyBtn.disabled = true;
-                getKeyBtn.className = 'btn btn-secondary';
-                updateStatus('❌ Lỗi: ' + loadError, 'error');
-                return;
-            }
-
-            if (!keysData || Object.keys(keysData).length === 0) {
-                getKeyBtn.textContent = '⚠️ Chưa có key';
-                getKeyBtn.disabled = true;
-                getKeyBtn.className = 'btn btn-secondary';
-                updateStatus('❌ Chưa có key nào trong hệ thống.', 'error');
-                return;
-            }
-
-            if (!hasKeysForToday()) {
+            const keys = getKeysForToday();
+            if (!keys || keys.length === 0) {
                 getKeyBtn.textContent = '📅 Chưa có key';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-secondary';
-                updateStatus('❌ Chưa có key cho ngày ' + getToday(), 'error');
+                updateStatus('❌ Chưa có key cho ngày hôm nay.', 'error');
                 return;
             }
 
@@ -336,7 +237,8 @@
 
         // ===== XỬ LÝ BẤM NÚT GET KEY =====
         getKeyBtn.addEventListener('click', function() {
-            if (!fileLoaded || loadError || !keysData || !hasKeysForToday()) {
+            const keys = getKeysForToday();
+            if (!keys || keys.length === 0) {
                 handleNoKey();
                 return;
             }
@@ -347,17 +249,18 @@
         });
 
         // ===== KHỞI TẠO TRANG =====
-        async function init() {
-            debugToday.textContent = getToday();
-            await loadKeysData();
-
+        function init() {
             const saved = localStorage.getItem('received_key_' + getToday() + '_' + getCurrentHour());
-            if (saved && fileLoaded && keysData && hasKeysForToday()) {
+            if (saved) {
                 try {
                     const keyData = JSON.parse(saved);
                     if (keyData && keyData.key) {
-                        showKey(keyData.key, false);
-                        return;
+                        // Kiểm tra xem key có hợp lệ với ngày hôm nay không
+                        const keys = getKeysForToday();
+                        if (keys && keys.includes(keyData.key)) {
+                            showKey(keyData.key, false);
+                            return;
+                        }
                     }
                 } catch (e) {}
             }
