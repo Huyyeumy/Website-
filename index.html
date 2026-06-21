@@ -25,119 +25,70 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
             padding: 40px;
-            max-width: 450px;
+            max-width: 500px;
             width: 100%;
             text-align: center;
         }
-        .lock-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            display: block;
-        }
-        h1 {
-            color: #fff;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .subtitle {
-            color: #94a3b8;
-            font-size: 15px;
-            margin-bottom: 30px;
-        }
+        .lock-icon { font-size: 64px; margin-bottom: 20px; display: block; }
+        h1 { color: #fff; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { color: #94a3b8; font-size: 15px; margin-bottom: 30px; }
+        
         .btn {
-            display: inline-block;
-            padding: 16px 32px;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            width: 100%;
-            color: #0a0a1a;
+            display: inline-block; padding: 16px 32px; border: none; border-radius: 12px;
+            font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+            text-decoration: none; width: 100%; color: #0a0a1a;
             background: linear-gradient(135deg, #facc15, #f59e0b);
             box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
         }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(250, 204, 21, 0.4);
-        }
-        .btn:active {
-            transform: scale(0.98);
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        .btn-success {
-            background: linear-gradient(135deg, #4ade80, #22c55e);
-            box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
-        }
-        .btn-success:hover {
-            box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
-        }
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: none;
-        }
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: none;
-        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(250, 204, 21, 0.4); }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-success { background: linear-gradient(135deg, #4ade80, #22c55e); box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15); box-shadow: none; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); box-shadow: none; }
+        .btn-danger { background: linear-gradient(135deg, #f87171, #ef4444); color: #fff; box-shadow: 0 4px 15px rgba(248,113,113,0.3); }
+        .btn-danger:hover { box-shadow: 0 8px 25px rgba(248,113,113,0.4); }
+        
         .key-display {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            padding: 14px;
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 18px;
-            font-weight: 600;
-            color: #facc15;
-            border: 1px dashed rgba(250, 204, 21, 0.3);
-            word-break: break-all;
+            background: rgba(0,0,0,0.3); border-radius: 12px; padding: 14px; margin: 20px 0;
+            font-family: 'Courier New', monospace; font-size: 18px; font-weight: 600;
+            color: #facc15; border: 1px dashed rgba(250,204,21,0.3); word-break: break-all;
             user-select: all;
         }
-        .key-display .label {
-            display: block;
-            font-size: 12px;
-            color: #94a3b8;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            font-weight: 400;
-            margin-bottom: 6px;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .copy-hint {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 8px;
-        }
+        .key-display .label { display: block; font-size: 12px; color: #94a3b8; font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 400; margin-bottom: 6px; }
+        .hidden { display: none !important; }
+        .copy-hint { font-size: 12px; color: #64748b; margin-top: 8px; }
+        
         .status-msg {
             font-size: 14px;
             color: #94a3b8;
             margin: 15px 0;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
             border-radius: 8px;
+            border-left: 3px solid #64748b;
         }
-        .status-msg .highlight {
-            color: #facc15;
-            font-weight: 600;
+        .status-msg.success { border-left-color: #4ade80; color: #4ade80; }
+        .status-msg.error { border-left-color: #f87171; color: #f87171; }
+        .status-msg.warning { border-left-color: #facc15; color: #facc15; }
+        .status-msg.info { border-left-color: #60a5fa; color: #60a5fa; }
+        
+        .debug-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            text-align: left;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            color: #94a3b8;
+            line-height: 1.6;
         }
-        .status-msg .success {
-            color: #4ade80;
-            font-weight: 600;
-        }
-        .status-msg .error {
-            color: #f87171;
-            font-weight: 600;
-        }
+        .debug-box .label { color: #64748b; }
+        .debug-box .value { color: #facc15; }
+        .debug-box .error-text { color: #f87171; }
+        .debug-box .success-text { color: #4ade80; }
+        .debug-box .warning-text { color: #facc15; }
     </style>
 </head>
 <body>
@@ -161,6 +112,14 @@
         </button>
 
         <div class="copy-hint" id="copyHint">💡 Click vào key để copy</div>
+
+        <div id="debugBox" class="debug-box">
+            <div><span class="label">📂 Đường dẫn:</span> <span class="value" id="debugPath">Keys.json</span></div>
+            <div><span class="label">📅 Ngày hôm nay:</span> <span class="value" id="debugToday">--</span></div>
+            <div><span class="label">📋 Trạng thái:</span> <span id="debugStatus">⏳ Đang tải...</span></div>
+            <div id="debugError" style="display:none;"><span class="label">❌ Lỗi chi tiết:</span> <span class="error-text" id="debugErrorText"></span></div>
+            <div id="debugKeys" style="display:none;"><span class="label">🔑 Key trong ngày:</span> <span class="value" id="debugKeysCount">0</span></div>
+        </div>
     </div>
 
     <script>
@@ -170,14 +129,22 @@
         const keyValue = document.getElementById('keyValue');
         const copyHint = document.getElementById('copyHint');
         const statusMsg = document.getElementById('statusMsg');
+        const debugPath = document.getElementById('debugPath');
+        const debugToday = document.getElementById('debugToday');
+        const debugStatus = document.getElementById('debugStatus');
+        const debugError = document.getElementById('debugError');
+        const debugErrorText = document.getElementById('debugErrorText');
+        const debugKeys = document.getElementById('debugKeys');
+        const debugKeysCount = document.getElementById('debugKeysCount');
 
         // ===== CẤU HÌNH =====
-        // Đường dẫn tương đối - file Keys.json cùng thư mục
         const KEYS_URL = 'Keys.json';
 
         // ===== STATE =====
         let keysData = null;
         let fileLoaded = false;
+        let loadError = null;
+        let errorDetails = null;
 
         // ===== LẤY NGÀY HIỆN TẠI =====
         function getToday() {
@@ -189,33 +156,87 @@
             return new Date().getHours();
         }
 
+        // ===== CẬP NHẬT DEBUG =====
+        function updateDebug(status, error = null, keysCount = null) {
+            debugToday.textContent = getToday();
+            debugStatus.textContent = status || 'Đang tải...';
+
+            if (error) {
+                debugError.style.display = 'block';
+                debugErrorText.textContent = error;
+            } else {
+                debugError.style.display = 'none';
+            }
+
+            if (keysCount !== null) {
+                debugKeys.style.display = 'block';
+                debugKeysCount.textContent = keysCount;
+            } else {
+                debugKeys.style.display = 'none';
+            }
+        }
+
+        // ===== CẬP NHẬT TRẠNG THÁI =====
+        function updateStatus(message, type = 'info') {
+            statusMsg.textContent = message;
+            statusMsg.className = 'status-msg ' + type;
+        }
+
         // ===== LẤY KEY TỪ FILE JSON =====
         async function loadKeysData() {
             try {
+                debugPath.textContent = KEYS_URL;
+                updateDebug('⏳ Đang tải...');
+                updateStatus('⏳ Đang tải dữ liệu key...', 'info');
                 console.log('🔄 Đang tải Keys.json...');
-                const response = await fetch(KEYS_URL);
+
+                const response = await fetch(KEYS_URL, {
+                    cache: 'no-cache',
+                    headers: { 'Accept': 'application/json' }
+                });
 
                 if (!response.ok) {
-                    throw new Error('Không tìm thấy file Keys.json');
+                    throw new Error('HTTP ' + response.status + ' - ' + response.statusText);
                 }
 
                 const text = await response.text();
+                console.log('📄 Nội dung file (200 ký tự đầu):', text.substring(0, 200));
 
-                if (!text || text.trim() === '' || text.trim() === '{}') {
-                    console.log('⚠️ File Keys.json rỗng!');
-                    keysData = {};
-                    fileLoaded = true;
-                    return;
+                if (!text || text.trim() === '') {
+                    throw new Error('File Keys.json rỗng (không có nội dung)');
+                }
+
+                if (text.trim() === '{}') {
+                    throw new Error('File Keys.json rỗng (chỉ có {})');
                 }
 
                 keysData = JSON.parse(text);
                 fileLoaded = true;
+                loadError = null;
+                errorDetails = null;
+
+                const totalKeys = Object.keys(keysData).length;
+                const todayKeys = keysData[getToday()] ? keysData[getToday()].length : 0;
+
                 console.log('✅ Đã tải Keys.json thành công!');
-                console.log('📋 Dữ liệu:', keysData);
+                console.log('📋 Tổng số ngày có key:', totalKeys);
+                console.log('📋 Key hôm nay:', todayKeys);
+
+                updateDebug('✅ Đã tải thành công', null, todayKeys);
+                updateStatus('✅ Đã tải dữ liệu key thành công!', 'success');
+                return true;
             } catch (error) {
-                console.error('❌ Lỗi:', error.message);
+                console.error('❌ Lỗi chi tiết:', error);
+                console.error('❌ Stack trace:', error.stack);
+
                 keysData = null;
                 fileLoaded = false;
+                loadError = error.message;
+                errorDetails = error.stack || error.message;
+
+                updateDebug('❌ Lỗi tải', error.message);
+                updateStatus('❌ Lỗi: ' + error.message, 'error');
+                return false;
             }
         }
 
@@ -297,17 +318,6 @@
             return usedKeys.includes(key);
         }
 
-        // ===== HIỂN THỊ TRẠNG THÁI =====
-        function updateStatus(message, type = 'normal') {
-            const map = {
-                'normal': message,
-                'success': '<span class="success">' + message + '</span>',
-                'error': '<span class="error">' + message + '</span>',
-                'highlight': '<span class="highlight">' + message + '</span>',
-            };
-            statusMsg.innerHTML = map[type] || message;
-        }
-
         // ===== HIỂN THỊ KEY =====
         function showKey(key, isNew = false) {
             keyValue.textContent = key;
@@ -322,7 +332,7 @@
                 getKeyBtn.textContent = '✅ Đã nhận key';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-success';
-                updateStatus('📌 Key của bạn.', 'highlight');
+                updateStatus('📌 Key của bạn.', 'info');
             }
             copyHint.textContent = '💡 Click vào key để copy';
         }
@@ -335,25 +345,36 @@
                 getKeyBtn.textContent = '🔄 Đang tải...';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn';
-                updateStatus('⏳ Đang tải dữ liệu key...', 'normal');
+                updateStatus('⏳ Đang tải dữ liệu key...', 'info');
+                return;
+            }
+
+            if (loadError) {
+                getKeyBtn.textContent = '⚠️ Lỗi tải';
+                getKeyBtn.disabled = true;
+                getKeyBtn.className = 'btn btn-danger';
+                updateStatus('❌ Lỗi: ' + loadError, 'error');
+                copyHint.textContent = '🔄 Vui lòng tải lại trang.';
                 return;
             }
 
             if (!keysData || Object.keys(keysData).length === 0) {
-                getKeyBtn.textContent = '🚫 Không có key';
+                getKeyBtn.textContent = '⚠️ Chưa có key';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-secondary';
-                updateStatus('❌ Không có key nào hoạt động.', 'error');
+                updateStatus('❌ Chưa có key nào trong hệ thống.', 'error');
                 copyHint.textContent = '⏰ Vui lòng quay lại sau.';
                 return;
             }
 
             if (!hasKeysForToday()) {
-                getKeyBtn.textContent = '🚫 Không có key';
+                const today = getToday();
+                const allDates = Object.keys(keysData).join(', ');
+                getKeyBtn.textContent = '📅 Chưa có key';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-secondary';
-                updateStatus('❌ Không có key nào cho ngày hôm nay.', 'error');
-                copyHint.textContent = '⏰ Vui lòng quay lại sau.';
+                updateStatus('❌ Chưa có key cho ngày ' + today + '.', 'error');
+                copyHint.textContent = '📅 Các ngày có key: ' + allDates;
                 return;
             }
 
@@ -370,7 +391,7 @@
             getKeyBtn.textContent = '🎯 Get Key';
             getKeyBtn.disabled = false;
             getKeyBtn.className = 'btn';
-            updateStatus('🔄 Nhấn "Get Key" để nhận key.', 'highlight');
+            updateStatus('🔄 Nhấn "Get Key" để nhận key.', 'warning');
             copyHint.textContent = '💡 Click vào key để copy';
         }
 
@@ -411,7 +432,7 @@
 
         // ===== XỬ LÝ BẤM NÚT GET KEY =====
         getKeyBtn.addEventListener('click', function() {
-            if (!fileLoaded) {
+            if (!fileLoaded || loadError) {
                 handleNoKey();
                 return;
             }
@@ -443,6 +464,10 @@
 
         // ===== KHỞI TẠO TRANG =====
         async function init() {
+            // Hiển thị ngày
+            debugToday.textContent = getToday();
+
+            // Tải keys.json
             await loadKeysData();
 
             const today = getToday();
@@ -461,6 +486,7 @@
 
             handleNoKey();
 
+            // Kiểm tra reset mỗi phút
             setInterval(function() {
                 const currentHour = getCurrentHour();
                 const today = getToday();
@@ -478,6 +504,7 @@
                 }
             }, 60000);
 
+            // Tải lại keys.json mỗi 5 phút
             setInterval(async function() {
                 await loadKeysData();
                 if (!hasKeysForToday() || !keysData || Object.keys(keysData).length === 0) {
