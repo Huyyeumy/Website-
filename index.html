@@ -40,6 +40,7 @@
         .stats strong { color: white; font-size: 18px; }
         .stats .total strong { color: #6c63ff; }
         .stats .active strong { color: #51cf66; }
+        .stats .used strong { color: #ff6b6b; }
         
         .date-selector {
             display: flex;
@@ -50,6 +51,8 @@
             padding: 10px;
             background: rgba(255,255,255,0.03);
             border-radius: 12px;
+            max-height: 150px;
+            overflow-y: auto;
         }
         .date-selector button {
             padding: 8px 16px;
@@ -106,40 +109,6 @@
         .loading-state .spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #6c63ff; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        .api-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .api-info .label { color: #888; font-size: 12px; }
-        .api-link-box {
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 5px;
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 12px;
-            color: #6c63ff;
-        }
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            background: #6c63ff;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn:hover { transform: translateY(-2px); }
-        .btn-danger { background: #ff6b6b; }
-        .btn-danger:hover { background: #ff4444; }
-        .btn-success { background: #51cf66; }
-        .btn-success:hover { background: #40c057; }
-        
         .toast {
             position: fixed;
             bottom: 30px;
@@ -158,6 +127,41 @@
         .toast.show { opacity: 1; }
         .toast.success { border-left: 4px solid #51cf66; }
         .toast.error { border-left: 4px solid #ff6b6b; }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #6c63ff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-success { background: #51cf66; }
+        .btn-success:hover { background: #40c057; }
+        .btn-danger { background: #ff6b6b; }
+        .btn-danger:hover { background: #ff4444; }
+        
+        .api-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .api-info .label { color: #888; font-size: 12px; }
+        .api-link-box {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 5px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+            color: #6c63ff;
+        }
     </style>
 </head>
 <body>
@@ -170,7 +174,7 @@
         <div class="stats">
             <span class="total">📊 Tổng key: <strong id="totalKeys">0</strong></span>
             <span class="active">🟢 Còn trống: <strong id="availableKeys">0</strong></span>
-            <span class="expired">🔴 Đã dùng: <strong id="usedKeys">0</strong></span>
+            <span class="used">🔴 Đã dùng: <strong id="usedKeys">0</strong></span>
         </div>
 
         <div class="date-selector" id="dateSelector">
@@ -179,13 +183,13 @@
 
         <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
             <button class="btn btn-success" onclick="refreshKeys()">🔄 Refresh</button>
-            <button class="btn" onclick="copyAllKeys()">📋 Copy tất cả</button>
+            <button class="btn btn-danger" onclick="resetAllKeys()">🗑️ Reset tất cả</button>
         </div>
 
         <div id="keyGrid" class="key-grid">
             <div class="loading-state">
                 <div class="spinner"></div>
-                <p style="margin-top: 15px;">Đang tải danh sách key...</p>
+                <p style="margin-top:15px;">Đang tải danh sách key...</p>
             </div>
         </div>
 
@@ -196,12 +200,12 @@
         </div>
     </div>
 
-    <!-- Toast thông báo -->
     <div id="toast" class="toast"></div>
 
     <script>
         // ===== CẤU HÌNH =====
-        const KEYS_URL = 'https://raw.githubusercontent.com/Huyyeumy/Website-/refs/heads/main/Keys.json';
+        // Đọc file Keys.json cùng thư mục
+        const KEYS_URL = 'Keys.json';
         let keysData = {};
         let currentDate = '';
         let usedKeys = JSON.parse(localStorage.getItem('used_keys') || '{}');
@@ -218,4 +222,243 @@
         function saveUsedKeys() {
             localStorage.setItem('used_keys', JSON.stringify(usedKeys));
         }
-        
+
+        // ===== ĐÁNH DẤU KEY ĐÃ DÙNG =====
+        function markKeyUsed(date, key) {
+            if (!usedKeys[date]) usedKeys[date] = [];
+            if (!usedKeys[date].includes(key)) {
+                usedKeys[date].push(key);
+                saveUsedKeys();
+                loadKeys(currentDate);
+            }
+        }
+
+        // ===== KIỂM TRA KEY ĐÃ DÙNG CHƯA =====
+        function isKeyUsed(date, key) {
+            return usedKeys[date] && usedKeys[date].includes(key);
+        }
+
+        // ===== TẢI DỮ LIỆU KEY TỪ FILE JSON =====
+        async function loadKeysData() {
+            try {
+                const response = await fetch(KEYS_URL);
+                if (!response.ok) throw new Error('Không thể tải keys.json');
+                keysData = await response.json();
+                return true;
+            } catch (error) {
+                console.error('Lỗi tải keys:', error);
+                return false;
+            }
+        }
+
+        // ===== LẤY DANH SÁCH NGÀY =====
+        function getAvailableDates() {
+            return Object.keys(keysData).sort();
+        }
+
+        // ===== TẠO NÚT CHỌN NGÀY =====
+        function createDateButtons() {
+            const container = document.getElementById('dateSelector');
+            const dates = getAvailableDates();
+            const today = new Date().toISOString().split('T')[0];
+            
+            container.innerHTML = '';
+            
+            dates.forEach(date => {
+                const btn = document.createElement('button');
+                btn.textContent = date;
+                btn.dataset.date = date;
+                if (date === today) btn.classList.add('today');
+                if (date === currentDate || (!currentDate && date === today)) {
+                    btn.classList.add('active');
+                    if (!currentDate) currentDate = date;
+                }
+                btn.onclick = () => {
+                    document.querySelectorAll('.date-selector button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentDate = date;
+                    loadKeys(date);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // ===== HIỂN THỊ KEY =====
+        function loadKeys(date) {
+            const grid = document.getElementById('keyGrid');
+            
+            if (!date || !keysData[date]) {
+                grid.innerHTML = `<div class="empty-state"><div class="icon">📅</div><p>Không có key cho ngày này</p></div>`;
+                updateStats(0, 0, 0);
+                return;
+            }
+
+            const keys = keysData[date];
+            let total = keys.length;
+            let available = 0;
+            let used = 0;
+
+            let html = '';
+            keys.forEach(key => {
+                const isUsed = isKeyUsed(date, key);
+                if (isUsed) used++;
+                else available++;
+                
+                html += `
+                    <div class="key-item ${isUsed ? 'used' : ''}" onclick="copyKey('${date}', '${key}')" title="Click để copy">
+                        <div class="key-code">${key}</div>
+                        <span class="key-status ${isUsed ? 'used' : 'available'}">${isUsed ? '🔴 Đã dùng' : '🟢 Còn trống'}</span>
+                        <span class="copy-hint">📋 Click để copy</span>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+            updateStats(total, available, used);
+        }
+
+        // ===== CẬP NHẬT THỐNG KÊ =====
+        function updateStats(total, available, used) {
+            document.getElementById('totalKeys').textContent = total || 0;
+            document.getElementById('availableKeys').textContent = available || 0;
+            document.getElementById('usedKeys').textContent = used || 0;
+        }
+
+        // ===== COPY KEY =====
+        function copyKey(date, key) {
+            if (isKeyUsed(date, key)) {
+                showToast('⚠️ Key này đã được sử dụng!', 'error');
+                return;
+            }
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(key).then(() => {
+                    showToast('✅ Đã copy: ' + key, 'success');
+                    markKeyUsed(date, key);
+                }).catch(() => {
+                    showToast('⚠️ Không thể copy!', 'error');
+                });
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = key;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('✅ Đã copy: ' + key, 'success');
+                markKeyUsed(date, key);
+            }
+        }
+
+        // ===== REFRESH =====
+        async function refreshKeys() {
+            const grid = document.getElementById('keyGrid');
+            grid.innerHTML = `<div class="loading-state"><div class="spinner"></div><p style="margin-top:15px;">Đang tải lại...</p></div>`;
+            
+            const success = await loadKeysData();
+            if (success) {
+                createDateButtons();
+                loadKeys(currentDate);
+                updateApiLink();
+                showToast('✅ Đã refresh thành công!', 'success');
+            } else {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">❌</div>
+                        <p>Không thể tải dữ liệu key!</p>
+                        <p style="font-size:12px;color:#666;">Vui lòng kiểm tra file Keys.json</p>
+                        <button class="btn" onclick="refreshKeys()" style="margin-top:15px;">🔄 Thử lại</button>
+                    </div>
+                `;
+                showToast('❌ Lỗi tải dữ liệu!', 'error');
+            }
+        }
+
+        // ===== RESET TẤT CẢ KEY =====
+        function resetAllKeys() {
+            if (confirm('⚠️ Xóa tất cả key đã dùng?')) {
+                usedKeys = {};
+                saveUsedKeys();
+                loadKeys(currentDate);
+                showToast('✅ Đã reset tất cả!', 'success');
+            }
+        }
+
+        // ===== API LINK =====
+        function updateApiLink() {
+            const link = window.location.href.split('?')[0] + '?key=YOUR_KEY_HERE';
+            document.getElementById('apiLink').textContent = link;
+        }
+
+        function copyApiLink() {
+            const link = document.getElementById('apiLink').textContent;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(link);
+                showToast('📋 Đã copy link API!', 'success');
+            }
+        }
+
+        // ===== XỬ LÝ API CHO ROBLOX =====
+        (async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const checkKey = urlParams.get('key');
+            
+            if (checkKey) {
+                await loadKeysData();
+                const today = new Date().toISOString().split('T')[0];
+                let result = 'invalid';
+                let foundDate = '';
+                
+                // Kiểm tra key trong tất cả các ngày
+                for (const [date, keys] of Object.entries(keysData)) {
+                    if (keys.includes(checkKey)) {
+                        foundDate = date;
+                        // Kiểm tra key chưa dùng
+                        if (!isKeyUsed(date, checkKey)) {
+                            result = 'valid';
+                            // Đánh dấu key đã dùng
+                            markKeyUsed(date, checkKey);
+                        }
+                        break;
+                    }
+                }
+                
+                document.body.innerHTML = result;
+                document.body.style.display = 'flex';
+                document.body.style.justifyContent = 'center';
+                document.body.style.alignItems = 'center';
+                document.body.style.height = '100vh';
+                document.body.style.background = '#0a0a1a';
+                document.body.style.color = result === 'valid' ? '#51cf66' : '#ff6b6b';
+                document.body.style.fontSize = '32px';
+                document.body.style.fontFamily = 'monospace';
+                document.body.style.fontWeight = 'bold';
+                return;
+            }
+        })();
+
+        // ===== KHỞI TẠO =====
+        async function init() {
+            const success = await loadKeysData();
+            if (success) {
+                const today = new Date().toISOString().split('T')[0];
+                currentDate = today;
+                createDateButtons();
+                loadKeys(currentDate);
+                updateApiLink();
+            } else {
+                document.getElementById('keyGrid').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">❌</div>
+                        <p>Không thể tải dữ liệu key!</p>
+                        <p style="font-size:12px;color:#666;">Vui lòng kiểm tra file Keys.json</p>
+                        <button class="btn" onclick="refreshKeys()" style="margin-top:15px;">🔄 Thử lại</button>
+                    </div>
+                `;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
