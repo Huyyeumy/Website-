@@ -79,6 +79,16 @@
         .btn-success:hover {
             box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
         }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+        }
         .key-display {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 12px;
@@ -128,16 +138,6 @@
             color: #f87171;
             font-weight: 600;
         }
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: none;
-        }
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: none;
-        }
     </style>
 </head>
 <body>
@@ -177,6 +177,7 @@
 
         // ===== STATE =====
         let keysData = null;
+        let currentKeyIndex = 0; // Vị trí key đã lấy
 
         // ===== LẤY NGÀY HIỆN TẠI =====
         function getToday() {
@@ -202,58 +203,46 @@
             }
         }
 
-        // ===== TẠO KEY NGẪU NHIÊN =====
-        function generateKey() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let key = 'KEY-';
-            for (let i = 0; i < 10; i++) {
-                key += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return key;
-        }
-
-        // ===== LƯU KEY =====
-        function saveKey(key) {
-            const data = {
-                key: key,
-                date: getToday(),
-                hour: getCurrentHourMinute()
-            };
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            } catch (e) {}
-        }
-
-        // ===== ĐỌC KEY =====
-        function loadKey() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (!raw) return null;
-                return JSON.parse(raw);
-            } catch (e) {
-                return null;
-            }
-        }
-
-        // ===== KIỂM TRA KEY CÓ HỢP LỆ TRONG GIỜ HIỆN TẠI =====
-        function isKeyValid() {
-            const saved = loadKey();
-            if (!saved) return false;
-
+        // ===== LẤY DANH SÁCH KEY CHO NGÀY HÔM NAY =====
+        function getKeysForToday() {
+            if (!keysData) return null;
             const today = getToday();
-            const currentHour = getCurrentHourMinute();
-
-            if (saved.date !== today) return false;
-            if (saved.hour !== currentHour) return false;
-
-            return true;
+            return keysData[today] || null;
         }
 
-        // ===== KIỂM TRA CÓ KEY TRONG FILE JSON CHO NGÀY HÔM NAY =====
-        function hasKeyForToday() {
-            if (!keysData) return false;
+        // ===== LẤY KEY CHƯA DÙNG TRONG NGÀY =====
+        function getAvailableKey() {
+            const keys = getKeysForToday();
+            if (!keys || keys.length === 0) return null;
+
+            // Lấy danh sách key đã dùng
+            const usedKeys = JSON.parse(localStorage.getItem('used_keys_' + getToday()) || '[]');
+
+            // Tìm key chưa dùng
+            for (const key of keys) {
+                if (!usedKeys.includes(key)) {
+                    return key;
+                }
+            }
+
+            return null; // Hết key
+        }
+
+        // ===== ĐÁNH DẤU KEY ĐÃ DÙNG =====
+        function markKeyUsed(key) {
             const today = getToday();
-            return keysData[today] && keysData[today].length > 0;
+            const usedKeys = JSON.parse(localStorage.getItem('used_keys_' + today) || '[]');
+            if (!usedKeys.includes(key)) {
+                usedKeys.push(key);
+                localStorage.setItem('used_keys_' + today, JSON.stringify(usedKeys));
+            }
+        }
+
+        // ===== KIỂM TRA KEY ĐÃ DÙNG CHƯA =====
+        function isKeyUsed(key) {
+            const today = getToday();
+            const usedKeys = JSON.parse(localStorage.getItem('used_keys_' + today) || '[]');
+            return usedKeys.includes(key);
         }
 
         // ===== HIỂN THỊ TRẠNG THÁI =====
@@ -287,7 +276,7 @@
         }
 
         // ===== XỬ LÝ KHI CHƯA CÓ KEY =====
-        function handleNoKey() {
+        function handleNoKey(message) {
             keyDisplay.classList.add('hidden');
 
             if (!keysData) {
@@ -298,12 +287,24 @@
                 return;
             }
 
-            if (!hasKeyForToday()) {
+            const keys = getKeysForToday();
+            if (!keys || keys.length === 0) {
                 getKeyBtn.textContent = '🚫 Không có key';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-secondary';
-                updateStatus('❌ Không có key nào hoạt động cho ngày hôm nay.', 'error');
+                updateStatus('❌ Không có key nào cho ngày hôm nay.', 'error');
                 copyHint.textContent = '⏰ Vui lòng quay lại sau.';
+                return;
+            }
+
+            // Kiểm tra còn key không
+            const availableKey = getAvailableKey();
+            if (!availableKey) {
+                getKeyBtn.textContent = '🚫 Hết key';
+                getKeyBtn.disabled = true;
+                getKeyBtn.className = 'btn btn-secondary';
+                updateStatus('❌ Đã hết key cho ngày hôm nay.', 'error');
+                copyHint.textContent = '⏰ Vui lòng quay lại ngày mai.';
                 return;
             }
 
@@ -356,42 +357,48 @@
                 return;
             }
 
-            if (!hasKeyForToday()) {
+            const keys = getKeysForToday();
+            if (!keys || keys.length === 0) {
                 handleNoKey();
                 return;
             }
 
-            if (isKeyValid()) {
-                const saved = loadKey();
-                if (saved) showKey(saved.key, false);
+            // Lấy key chưa dùng
+            const availableKey = getAvailableKey();
+            if (!availableKey) {
+                handleNoKey();
                 return;
             }
 
-            const newKey = generateKey();
-            saveKey(newKey);
-            showKey(newKey, true);
+            // Đánh dấu key đã dùng
+            markKeyUsed(availableKey);
+            showKey(availableKey, true);
         });
 
         // ===== KHỞI TẠO TRANG =====
         async function init() {
             await loadKeysData();
 
-            if (isKeyValid()) {
-                const saved = loadKey();
-                if (saved) showKey(saved.key, false);
-                else handleNoKey();
-            } else {
-                if (loadKey()) {
-                    localStorage.removeItem(STORAGE_KEY);
+            // Kiểm tra xem đã nhận key trong giờ này chưa
+            const saved = localStorage.getItem('received_key_' + getToday() + '_' + getCurrentHourMinute());
+            if (saved) {
+                const keyData = JSON.parse(saved);
+                if (!isKeyUsed(keyData.key)) {
+                    showKey(keyData.key, false);
+                } else {
+                    handleNoKey();
                 }
+            } else {
                 handleNoKey();
             }
 
-            // Kiểm tra reset mỗi phút
+            // Reset mỗi giờ
             setInterval(function() {
-                const saved = loadKey();
-                if (saved && (saved.date !== getToday() || saved.hour !== getCurrentHourMinute())) {
-                    localStorage.removeItem(STORAGE_KEY);
+                const today = getToday();
+                const hour = getCurrentHourMinute();
+                const saved = localStorage.getItem('received_key_' + today + '_' + hour);
+                if (!saved) {
+                    // Chưa có key trong giờ này
                     handleNoKey();
                 }
             }, 60000);
@@ -399,11 +406,25 @@
             // Tải lại keys.json mỗi 10 phút
             setInterval(async function() {
                 const success = await loadKeysData();
-                if (success && !hasKeyForToday()) {
-                    handleNoKey();
+                if (success) {
+                    const keys = getKeysForToday();
+                    if (!keys || keys.length === 0) {
+                        handleNoKey();
+                    }
                 }
             }, 600000);
         }
+
+        // Lưu key đã nhận vào localStorage khi hiển thị
+        const originalShowKey = showKey;
+        showKey = function(key, isNew = false) {
+            if (isNew) {
+                const today = getToday();
+                const hour = getCurrentHourMinute();
+                localStorage.setItem('received_key_' + today + '_' + hour, JSON.stringify({ key: key }));
+            }
+            originalShowKey(key, isNew);
+        };
 
         init();
     </script>
