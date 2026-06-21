@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key System - Bear Hub</title>
+    <title>Key System</title>
     <style>
         * {
             margin: 0;
@@ -79,14 +79,6 @@
         .btn-success:hover {
             box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
         }
-        .btn-danger {
-            background: linear-gradient(135deg, #f87171, #ef4444);
-            box-shadow: 0 4px 15px rgba(248, 113, 113, 0.3);
-            color: white;
-        }
-        .btn-danger:hover {
-            box-shadow: 0 8px 25px rgba(248, 113, 113, 0.4);
-        }
         .key-display {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 12px;
@@ -111,11 +103,6 @@
         .hidden {
             display: none !important;
         }
-        .footer {
-            margin-top: 25px;
-            font-size: 12px;
-            color: #475569;
-        }
         .copy-hint {
             font-size: 12px;
             color: #64748b;
@@ -133,12 +120,12 @@
             color: #facc15;
             font-weight: 600;
         }
-        .status-msg .error {
-            color: #f87171;
-            font-weight: 600;
-        }
         .status-msg .success {
             color: #4ade80;
+            font-weight: 600;
+        }
+        .status-msg .error {
+            color: #f87171;
             font-weight: 600;
         }
     </style>
@@ -147,8 +134,8 @@
 
     <div class="container">
         <span class="lock-icon">🔑</span>
-        <h1>BEAR KEY SYSTEM</h1>
-        <p class="subtitle">Mỗi ngày chỉ nhận được 1 key</p>
+        <h1>KEY SYSTEM</h1>
+        <p class="subtitle">Nhấn nút bên dưới để nhận key</p>
 
         <div id="statusMsg" class="status-msg">
             ⏳ Đang kiểm tra...
@@ -164,10 +151,6 @@
         </button>
 
         <div class="copy-hint" id="copyHint">💡 Click vào key để copy</div>
-
-        <div class="footer">
-            <span>🔒 1 key/ngày - Reset lúc 00:00</span>
-        </div>
     </div>
 
     <script>
@@ -179,7 +162,7 @@
         const statusMsg = document.getElementById('statusMsg');
 
         // ===== CẤU HÌNH =====
-        const STORAGE_KEY = 'bear_daily_key';
+        const STORAGE_KEY = 'daily_key';
 
         // ===== LẤY NGÀY HIỆN TẠI (YYYY-MM-DD) =====
         function getToday() {
@@ -249,16 +232,16 @@
             keyDisplay.classList.remove('hidden');
 
             if (isNew) {
-                getKeyBtn.textContent = '✅ Đã nhận key hôm nay';
+                getKeyBtn.textContent = '✅ Đã nhận key';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-success';
-                updateStatus('✅ Đã nhận key thành công! Hẹn gặp lại ngày mai.', 'success');
+                updateStatus('✅ Đã nhận key thành công!', 'success');
                 copyHint.textContent = '💡 Click vào key để copy';
             } else {
-                getKeyBtn.textContent = '✅ Đã nhận key hôm nay';
+                getKeyBtn.textContent = '✅ Đã nhận key';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-success';
-                updateStatus('📌 Key của bạn hôm nay. Quay lại ngày mai để nhận key mới.', 'highlight');
+                updateStatus('📌 Key của bạn.', 'highlight');
                 copyHint.textContent = '💡 Click vào key để copy';
             }
         }
@@ -269,8 +252,8 @@
             getKeyBtn.textContent = '🎯 Get Key';
             getKeyBtn.disabled = false;
             getKeyBtn.className = 'btn';
-            updateStatus('🔄 Nhấn "Get Key" để nhận key hôm nay.', 'highlight');
-            copyHint.textContent = '💡 Mỗi ngày chỉ được nhận 1 key';
+            updateStatus('🔄 Nhấn "Get Key" để nhận key.', 'highlight');
+            copyHint.textContent = '💡 Click vào key để copy';
         }
 
         // ===== COPY KEY =====
@@ -310,7 +293,6 @@
 
         // ===== XỬ LÝ BẤM NÚT GET KEY =====
         getKeyBtn.addEventListener('click', function() {
-            // Kiểm tra đã lấy key hôm nay chưa
             if (!canGetKey()) {
                 const savedKey = getSavedKey();
                 if (savedKey) {
@@ -321,7 +303,6 @@
                 return;
             }
 
-            // Tạo key mới
             const newKey = generateKey();
             saveKey(newKey);
             showKey(newKey, true);
@@ -332,17 +313,14 @@
             const savedKey = getSavedKey();
 
             if (savedKey) {
-                // Đã có key hôm nay
                 showKey(savedKey, false);
             } else {
-                // Chưa có key hôm nay
                 handleNoKey();
             }
         }
 
         init();
 
-        // ===== KIỂM TRA KHI TRANG ĐƯỢC FOCUS LẠI =====
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
                 const savedKey = getSavedKey();
