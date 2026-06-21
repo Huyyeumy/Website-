@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bear Key System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a, #1a1a3e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 600px;
+            max-width: 100%;
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 32px; background: linear-gradient(135deg, #6c63ff, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header p { color: #888; margin-top: 5px; }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        .input-group input:focus { border-color: #6c63ff; }
+        .input-group input::placeholder { color: #666; }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .btn-primary { background: linear-gradient(135deg, #6c63ff, #8b83ff); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(108,99,255,0.3); }
+        .btn-success { background: linear-gradient(135deg, #51cf66, #69db7c); color: white; }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(81,207,102,0.3); }
+        .btn-danger { background: linear-gradient(135deg, #ff6b6b, #ff8e8e); color: white; }
+        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,107,107,0.3); }
+        
+        .result {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        .result.success { display: block; background: rgba(0,255,0,0.1); color: #51cf66; border: 1px solid rgba(0,255,0,0.2); }
+        .result.error { display: block; background: rgba(255,0,0,0.1); color: #ff6b6b; border: 1px solid rgba(255,0,0,0.2); }
+        .result.info { display: block; background: rgba(108,99,255,0.1); color: #6c63ff; border: 1px solid rgba(108,99,255,0.2); }
+        
+        .key-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .key-list::-webkit-scrollbar { width: 6px; }
+        .key-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .key-list::-webkit-scrollbar-thumb { background: #6c63ff; border-radius: 10px; }
+        
+        .key-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid #6c63ff;
+        }
+        .key-item.expired { border-left-color: #ff6b6b; opacity: 0.5; }
+        .key-item .key-code { font-weight: bold; font-family: monospace; font-size: 14px; }
+        .key-item .key-info { font-size: 12px; color: #888; }
+        .key-item .key-status { font-size: 12px; padding: 3px 10px; border-radius: 20px; }
+        .key-item .key-status.active { background: rgba(0,255,0,0.2); color: #51cf66; }
+        .key-item .key-status.expired { background: rgba(255,0,0,0.2); color: #ff6b6b; }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .stats span { font-size: 13px; color: #888; }
+        .stats strong { color: white; }
+        
+        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
+        .empty-state .icon { font-size: 48px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔑 BEAR KEY SYSTEM</h1>
+            <p>Tạo key và kiểm tra key</p>
+        </div>
+
+        <div class="stats">
+            <span>📊 Tổng key: <strong id="totalKeys">0</strong></span>
+            <span>🟢 Còn hạn: <strong id="activeKeys">0</strong></span>
+            <span>🔴 Hết hạn: <strong id="expiredKeys">0</strong></span>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="keyInput" placeholder="Nhập key để kiểm tra..." onkeydown="if(event.key==='Enter') checkKey()">
+            <button class="btn btn-primary" onclick="checkKey()">🔍 Kiểm tra</button>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button class="btn btn-success" onclick="generateKey()" style="flex:1;">🎲 Tạo Key (7 ngày)</button>
+            <button class="btn btn-danger" onclick="clearAllKeys()" style="flex:0.5;">🗑️ Xóa hết</button>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <h3 style="margin: 20px 0 10px; font-size: 16px; color: #888;">📋 Danh sách key</h3>
+        <div id="keyList" class="key-list">
+            <div class="empty-state">
+                <div class="icon">🔑</div>
+                <p>Chưa có key nào</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let keys = JSON.parse(localStorage.getItem('bear_keys')) || {};
+
+        function saveKeys() {
+            localStorage.setItem('bear_keys', JSON.stringify(keys));
+            updateUI();
+        }
+
+        // Tạo key mới
+        function generateKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let key = '';
+            for (let i = 0; i < 10; i++) {
+                key += chars[Math.floor(Math.random() * chars.length)];
+            }
+            
+            const expiry = new Date();
+            expiry.setDate(expiry.getDate() + 7);
+            
+            keys[key] = {
+                created: new Date().toISOString(),
+                expiry: expiry.toISOString(),
+                used: false
+            };
+            
+            saveKeys();
+            
+            showResult('✅ Đã tạo key: <strong>' + key + '</strong><br>⏰ Hết hạn: ' + formatDate(expiry), 'success');
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(key);
+            }
+            
+            return key;
+        }
+
+        // Kiểm tra key
+        function checkKey() {
+            const input = document.getElementById('keyInput');
+            const key = input.value.trim().toUpperCase();
+            
+            if (!key) {
+                showResult('⚠ Vui lòng nhập key!', 'error');
+                return;
+            }
+            
+            if (!keys[key]) {
+                showResult('❌ Key <strong>' + key + '</strong> không tồn tại!', 'error');
+                return;
+            }
+            
+            const now = new Date();
+            const expiry = new Date(keys[key].expiry);
+            
+            if (now > expiry) {
+                showResult('⏰ Key <strong>' + key + '</strong> đã hết hạn!', 'error');
+                return;
+            }
+            
+            showResult('✅ Key <strong>' + key + '</strong> hợp lệ!', 'success');
+        }
+
+        function formatDate(date) {
+            return date.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            result.className = 'result ' + type;
+            result.innerHTML = message;
+        }
+
+        function clearAllKeys() {
+            if (confirm('Xóa tất cả key?')) {
+                keys = {};
+                saveKeys();
+                showResult('🗑️ Đã xóa tất cả key!', 'info');
+            }
+        }
+
+        function updateUI() {
+            const keyList = document.getElementById('keyList');
+            const totalKeys = Object.keys(keys).length;
+            
+            document.getElementById('totalKeys').textContent = totalKeys;
+            
+            const now = new Date();
+            let active = 0, expired = 0;
+            
+            if (totalKeys === 0) {
+                keyList.innerHTML = '<div class="empty-state"><div class="icon">🔑</div><p>Chưa có key nào</p></div>';
+                return;
+            }
+            
+            let html = '';
+            for (const [key, data] of Object.entries(keys)) {
+                const expiry = new Date(data.expiry);
+                const isExpired = now > expiry;
+                
+                if (isExpired) expired++;
+                else active++;
+                
+                html += `
+                    <div class="key-item ${isExpired ? 'expired' : ''}">
+                        <div>
+                            <div class="key-code">${key}</div>
+                            <div class="key-info">📅 Hết hạn: ${formatDate(expiry)}</div>
+                        </div>
+                        <span class="key-status ${isExpired ? 'expired' : 'active'}">
+                            ${isExpired ? '🔴 Hết hạn' : '🟢 Còn hạn'}
+                        </span>
+                    </div>
+                `;
+            }
+            
+            keyList.innerHTML = html;
+            document.getElementById('activeKeys').textContent = active;
+            document.getElementById('expiredKeys').textContent = expired;
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
