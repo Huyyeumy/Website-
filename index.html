@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bear Key System</title>
+    <title>🔑 BEAR KEY SYSTEM</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -62,6 +62,7 @@
         .btn-success:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(81,207,102,0.3); }
         .btn-danger { background: linear-gradient(135deg, #ff6b6b, #ff8e8e); color: white; }
         .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,107,107,0.3); }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
         
         .result {
             padding: 15px;
@@ -112,6 +113,25 @@
         
         .empty-state { text-align: center; padding: 40px 20px; color: #666; }
         .empty-state .icon { font-size: 48px; margin-bottom: 10px; }
+        
+        .api-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .api-info .label { color: #888; font-size: 12px; }
+        .api-link-box {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 5px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+            color: #6c63ff;
+        }
     </style>
 </head>
 <body>
@@ -146,9 +166,16 @@
                 <p>Chưa có key nào</p>
             </div>
         </div>
+
+        <div class="api-info">
+            <div class="label">🔗 API cho Roblox (copy link này vào script):</div>
+            <div class="api-link-box" id="apiLink">Đang tải...</div>
+            <button class="btn btn-primary btn-sm" onclick="copyApiLink()" style="margin-top: 10px;">📋 Copy link API</button>
+        </div>
     </div>
 
     <script>
+        // ===== QUẢN LÝ KEY =====
         let keys = JSON.parse(localStorage.getItem('bear_keys')) || {};
 
         function saveKeys() {
@@ -156,7 +183,6 @@
             updateUI();
         }
 
-        // Tạo key mới
         function generateKey() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let key = '';
@@ -174,7 +200,6 @@
             };
             
             saveKeys();
-            
             showResult('✅ Đã tạo key: <strong>' + key + '</strong><br>⏰ Hết hạn: ' + formatDate(expiry), 'success');
             
             if (navigator.clipboard) {
@@ -184,7 +209,6 @@
             return key;
         }
 
-        // Kiểm tra key
         function checkKey() {
             const input = document.getElementById('keyInput');
             const key = input.value.trim().toUpperCase();
@@ -218,6 +242,7 @@
             const result = document.getElementById('result');
             result.className = 'result ' + type;
             result.innerHTML = message;
+            setTimeout(() => { result.className = 'result'; }, 5000);
         }
 
         function clearAllKeys() {
@@ -239,6 +264,8 @@
             
             if (totalKeys === 0) {
                 keyList.innerHTML = '<div class="empty-state"><div class="icon">🔑</div><p>Chưa có key nào</p></div>';
+                document.getElementById('activeKeys').textContent = '0';
+                document.getElementById('expiredKeys').textContent = '0';
                 return;
             }
             
@@ -268,7 +295,55 @@
             document.getElementById('expiredKeys').textContent = expired;
         }
 
-        updateUI();
+        // ===== API CHO ROBLOX =====
+        function handleApiRequest() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const checkKey = urlParams.get('key');
+            
+            if (checkKey) {
+                const now = new Date();
+                let result = 'invalid';
+                
+                if (keys[checkKey]) {
+                    const expiry = new Date(keys[checkKey].expiry);
+                    if (now <= expiry) {
+                        result = 'valid';
+                    }
+                }
+                
+                document.body.innerHTML = result;
+                document.body.style.display = 'flex';
+                document.body.style.justifyContent = 'center';
+                document.body.style.alignItems = 'center';
+                document.body.style.height = '100vh';
+                document.body.style.background = '#0a0a1a';
+                document.body.style.color = '#51cf66';
+                document.body.style.fontSize = '32px';
+                document.body.style.fontFamily = 'monospace';
+                document.body.style.fontWeight = 'bold';
+                return true;
+            }
+            return false;
+        }
+
+        function updateApiLink() {
+            const link = window.location.href.split('?')[0] + '?key=YOUR_KEY_HERE';
+            document.getElementById('apiLink').textContent = link;
+        }
+
+        function copyApiLink() {
+            const link = document.getElementById('apiLink').textContent;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(link);
+                showResult('📋 Đã copy link API!', 'success');
+            }
+        }
+
+        // ===== KHỞI TẠO =====
+        if (!handleApiRequest()) {
+            updateUI();
+            updateApiLink();
+        }
     </script>
 </body>
 </html>
