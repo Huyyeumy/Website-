@@ -172,13 +172,12 @@
         const statusMsg = document.getElementById('statusMsg');
 
         // ===== CẤU HÌNH =====
-        // QUAN TRỌNG: Đường dẫn tương đối - file cùng thư mục
+        // Đường dẫn tương đối - file Keys.json cùng thư mục
         const KEYS_URL = 'Keys.json';
 
         // ===== STATE =====
         let keysData = null;
         let fileLoaded = false;
-        let isLoading = false;
 
         // ===== LẤY NGÀY HIỆN TẠI =====
         function getToday() {
@@ -192,46 +191,31 @@
 
         // ===== LẤY KEY TỪ FILE JSON =====
         async function loadKeysData() {
-            if (isLoading) return;
-            isLoading = true;
-
             try {
-                console.log('🔄 Đang tải keys.json...');
-                console.log('📂 Đường dẫn:', KEYS_URL);
-
-                const response = await fetch(KEYS_URL, {
-                    cache: 'no-cache',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
+                console.log('🔄 Đang tải Keys.json...');
+                const response = await fetch(KEYS_URL);
 
                 if (!response.ok) {
-                    throw new Error('HTTP ' + response.status + ' - ' + response.statusText);
+                    throw new Error('Không tìm thấy file Keys.json');
                 }
 
                 const text = await response.text();
-                console.log('📄 Nội dung file:', text.substring(0, 200) + '...');
 
                 if (!text || text.trim() === '' || text.trim() === '{}') {
-                    console.log('⚠️ File keys.json rỗng!');
+                    console.log('⚠️ File Keys.json rỗng!');
                     keysData = {};
                     fileLoaded = true;
-                    return true;
+                    return;
                 }
 
                 keysData = JSON.parse(text);
                 fileLoaded = true;
-                console.log('✅ Đã tải keys.json thành công!');
+                console.log('✅ Đã tải Keys.json thành công!');
                 console.log('📋 Dữ liệu:', keysData);
-                return true;
             } catch (error) {
-                console.error('❌ Lỗi tải keys.json:', error.message);
+                console.error('❌ Lỗi:', error.message);
                 keysData = null;
                 fileLoaded = false;
-                return false;
-            } finally {
-                isLoading = false;
             }
         }
 
