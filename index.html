@@ -46,8 +46,6 @@
         .btn-success { background: linear-gradient(135deg, #4ade80, #22c55e); box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3); }
         .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15); box-shadow: none; }
         .btn-secondary:hover { background: rgba(255,255,255,0.15); box-shadow: none; }
-        .btn-danger { background: linear-gradient(135deg, #f87171, #ef4444); color: #fff; box-shadow: 0 4px 15px rgba(248,113,113,0.3); }
-        .btn-danger:hover { box-shadow: 0 8px 25px rgba(248,113,113,0.4); }
         
         .key-display {
             background: rgba(0,0,0,0.3); border-radius: 12px; padding: 14px; margin: 20px 0;
@@ -82,13 +80,12 @@
             font-size: 12px;
             font-family: 'Courier New', monospace;
             color: #94a3b8;
-            line-height: 1.6;
+            line-height: 1.8;
         }
         .debug-box .label { color: #64748b; }
         .debug-box .value { color: #facc15; }
         .debug-box .error-text { color: #f87171; }
         .debug-box .success-text { color: #4ade80; }
-        .debug-box .warning-text { color: #facc15; }
     </style>
 </head>
 <body>
@@ -114,10 +111,10 @@
         <div class="copy-hint" id="copyHint">💡 Click vào key để copy</div>
 
         <div id="debugBox" class="debug-box">
-            <div><span class="label">📂 Đường dẫn:</span> <span class="value" id="debugPath">Keys.json</span></div>
+            <div><span class="label">📂 Đường dẫn:</span> <span class="value" id="debugPath">--</span></div>
             <div><span class="label">📅 Ngày hôm nay:</span> <span class="value" id="debugToday">--</span></div>
             <div><span class="label">📋 Trạng thái:</span> <span id="debugStatus">⏳ Đang tải...</span></div>
-            <div id="debugError" style="display:none;"><span class="label">❌ Lỗi chi tiết:</span> <span class="error-text" id="debugErrorText"></span></div>
+            <div id="debugError" style="display:none;"><span class="label">❌ Lỗi:</span> <span class="error-text" id="debugErrorText"></span></div>
             <div id="debugKeys" style="display:none;"><span class="label">🔑 Key trong ngày:</span> <span class="value" id="debugKeysCount">0</span></div>
         </div>
     </div>
@@ -138,13 +135,37 @@
         const debugKeysCount = document.getElementById('debugKeysCount');
 
         // ===== CẤU HÌNH =====
-        const KEYS_URL = 'Keys.json';
+        // Link raw GitHub của Keys.json
+        const KEYS_URL = 'https://raw.githubusercontent.com/Huyyeumy/Website-/refs/heads/main/Keys.json';
+
+        // ===== KEY MẪU DỰ PHÒNG (NẾU KHÔNG TẢI ĐƯỢC) =====
+        const FALLBACK_KEYS = {
+            "2026-06-22": [
+                "FREE_A1B2C3D4E5",
+                "FREE_F6G7H8I9J0",
+                "FREE_K1L2M3N4O5",
+                "FREE_P6Q7R8S9T0",
+                "FREE_U1V2W3X4Y5",
+                "FREE_Z6A7B8C9D0",
+                "FREE_E1F2G3H4I5",
+                "FREE_J6K7L8M9N0",
+                "FREE_O1P2Q3R4S5",
+                "FREE_T6U7V8W9X0"
+            ],
+            "2026-06-23": [
+                "FREE_W1X2Y3Z4A5",
+                "FREE_B6C7D8E9F0",
+                "FREE_G1H2I3J4K5",
+                "FREE_L6M7N8O9P0",
+                "FREE_Q1R2S3T4U5"
+            ]
+        };
 
         // ===== STATE =====
         let keysData = null;
         let fileLoaded = false;
         let loadError = null;
-        let errorDetails = null;
+        let usingFallback = false;
 
         // ===== LẤY NGÀY HIỆN TẠI =====
         function getToday() {
@@ -158,6 +179,7 @@
 
         // ===== CẬP NHẬT DEBUG =====
         function updateDebug(status, error = null, keysCount = null) {
+            debugPath.textContent = KEYS_URL;
             debugToday.textContent = getToday();
             debugStatus.textContent = status || 'Đang tải...';
 
@@ -185,10 +207,9 @@
         // ===== LẤY KEY TỪ FILE JSON =====
         async function loadKeysData() {
             try {
-                debugPath.textContent = KEYS_URL;
-                updateDebug('⏳ Đang tải...');
-                updateStatus('⏳ Đang tải dữ liệu key...', 'info');
-                console.log('🔄 Đang tải Keys.json...');
+                updateDebug('⏳ Đang tải từ GitHub...');
+                updateStatus('⏳ Đang tải dữ liệu key từ GitHub...', 'info');
+                console.log('🔄 Đang tải Keys.json từ GitHub...');
 
                 const response = await fetch(KEYS_URL, {
                     cache: 'no-cache',
@@ -200,43 +221,40 @@
                 }
 
                 const text = await response.text();
-                console.log('📄 Nội dung file (200 ký tự đầu):', text.substring(0, 200));
+                console.log('📄 Nội dung file:', text.substring(0, 200) + '...');
 
-                if (!text || text.trim() === '') {
-                    throw new Error('File Keys.json rỗng (không có nội dung)');
-                }
-
-                if (text.trim() === '{}') {
-                    throw new Error('File Keys.json rỗng (chỉ có {})');
+                if (!text || text.trim() === '' || text.trim() === '{}') {
+                    throw new Error('File Keys.json rỗng');
                 }
 
                 keysData = JSON.parse(text);
                 fileLoaded = true;
                 loadError = null;
-                errorDetails = null;
+                usingFallback = false;
 
                 const totalKeys = Object.keys(keysData).length;
                 const todayKeys = keysData[getToday()] ? keysData[getToday()].length : 0;
 
                 console.log('✅ Đã tải Keys.json thành công!');
                 console.log('📋 Tổng số ngày có key:', totalKeys);
-                console.log('📋 Key hôm nay:', todayKeys);
 
-                updateDebug('✅ Đã tải thành công', null, todayKeys);
+                updateDebug('✅ Đã tải thành công (GitHub)', null, todayKeys);
                 updateStatus('✅ Đã tải dữ liệu key thành công!', 'success');
                 return true;
             } catch (error) {
-                console.error('❌ Lỗi chi tiết:', error);
-                console.error('❌ Stack trace:', error.stack);
+                console.error('❌ Lỗi tải từ GitHub:', error.message);
 
-                keysData = null;
-                fileLoaded = false;
-                loadError = error.message;
-                errorDetails = error.stack || error.message;
+                // DÙNG KEY MẪU DỰ PHÒNG
+                console.log('⚠️ Chuyển sang dùng key mẫu dự phòng...');
+                keysData = FALLBACK_KEYS;
+                fileLoaded = true;
+                loadError = null;
+                usingFallback = true;
 
-                updateDebug('❌ Lỗi tải', error.message);
-                updateStatus('❌ Lỗi: ' + error.message, 'error');
-                return false;
+                const todayKeys = keysData[getToday()] ? keysData[getToday()].length : 0;
+                updateDebug('⚠️ Đang dùng key mẫu (không tải được GitHub)', 'Không tải được từ GitHub, dùng key mẫu', todayKeys);
+                updateStatus('⚠️ Đang dùng key mẫu dự phòng (không tải được từ GitHub)', 'warning');
+                return true;
             }
         }
 
@@ -352,9 +370,8 @@
             if (loadError) {
                 getKeyBtn.textContent = '⚠️ Lỗi tải';
                 getKeyBtn.disabled = true;
-                getKeyBtn.className = 'btn btn-danger';
+                getKeyBtn.className = 'btn btn-secondary';
                 updateStatus('❌ Lỗi: ' + loadError, 'error');
-                copyHint.textContent = '🔄 Vui lòng tải lại trang.';
                 return;
             }
 
@@ -363,18 +380,16 @@
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-secondary';
                 updateStatus('❌ Chưa có key nào trong hệ thống.', 'error');
-                copyHint.textContent = '⏰ Vui lòng quay lại sau.';
                 return;
             }
 
             if (!hasKeysForToday()) {
                 const today = getToday();
-                const allDates = Object.keys(keysData).join(', ');
                 getKeyBtn.textContent = '📅 Chưa có key';
                 getKeyBtn.disabled = true;
                 getKeyBtn.className = 'btn btn-secondary';
                 updateStatus('❌ Chưa có key cho ngày ' + today + '.', 'error');
-                copyHint.textContent = '📅 Các ngày có key: ' + allDates;
+                copyHint.textContent = '📅 Vui lòng quay lại vào ngày khác.';
                 return;
             }
 
@@ -464,10 +479,7 @@
 
         // ===== KHỞI TẠO TRANG =====
         async function init() {
-            // Hiển thị ngày
             debugToday.textContent = getToday();
-
-            // Tải keys.json
             await loadKeysData();
 
             const today = getToday();
@@ -486,7 +498,6 @@
 
             handleNoKey();
 
-            // Kiểm tra reset mỗi phút
             setInterval(function() {
                 const currentHour = getCurrentHour();
                 const today = getToday();
@@ -504,7 +515,6 @@
                 }
             }, 60000);
 
-            // Tải lại keys.json mỗi 5 phút
             setInterval(async function() {
                 await loadKeysData();
                 if (!hasKeysForToday() || !keysData || Object.keys(keysData).length === 0) {
