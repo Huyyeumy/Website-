@@ -3,115 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔑 BEAR KEY SYSTEM</title>
+    <title>🔑 BEAR KEY SYSTEM - LẤY KEY</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #0a0a1a, #1a1a3e);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
             padding: 20px;
+            color: white;
         }
         .container {
+            max-width: 1000px;
+            margin: 0 auto;
             background: rgba(255,255,255,0.05);
             backdrop-filter: blur(20px);
-            padding: 40px;
+            padding: 30px;
             border-radius: 20px;
             border: 1px solid rgba(255,255,255,0.1);
-            width: 600px;
-            max-width: 100%;
         }
         .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-size: 32px; background: linear-gradient(135deg, #6c63ff, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header p { color: #888; margin-top: 5px; }
-        
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .input-group input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 10px;
-            background: rgba(255,255,255,0.05);
-            color: white;
-            font-size: 14px;
-            outline: none;
-        }
-        .input-group input:focus { border-color: #6c63ff; }
-        .input-group input::placeholder { color: #666; }
-        
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 14px;
-        }
-        .btn-primary { background: linear-gradient(135deg, #6c63ff, #8b83ff); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(108,99,255,0.3); }
-        .btn-success { background: linear-gradient(135deg, #51cf66, #69db7c); color: white; }
-        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(81,207,102,0.3); }
-        .btn-danger { background: linear-gradient(135deg, #ff6b6b, #ff8e8e); color: white; }
-        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,107,107,0.3); }
-        
-        .result {
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            display: none;
-        }
-        .result.success { display: block; background: rgba(0,255,0,0.1); color: #51cf66; border: 1px solid rgba(0,255,0,0.2); }
-        .result.error { display: block; background: rgba(255,0,0,0.1); color: #ff6b6b; border: 1px solid rgba(255,0,0,0.2); }
-        .result.info { display: block; background: rgba(108,99,255,0.1); color: #6c63ff; border: 1px solid rgba(108,99,255,0.2); }
-        
-        .key-list {
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .key-list::-webkit-scrollbar { width: 6px; }
-        .key-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
-        .key-list::-webkit-scrollbar-thumb { background: #6c63ff; border-radius: 10px; }
-        
-        .key-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            margin-bottom: 8px;
-            border-left: 3px solid #6c63ff;
-        }
-        .key-item.expired { border-left-color: #ff6b6b; opacity: 0.5; }
-        .key-item .key-code { font-weight: bold; font-family: monospace; font-size: 14px; }
-        .key-item .key-info { font-size: 12px; color: #888; }
-        .key-item .key-status { font-size: 12px; padding: 3px 10px; border-radius: 20px; }
-        .key-item .key-status.active { background: rgba(0,255,0,0.2); color: #51cf66; }
-        .key-item .key-status.expired { background: rgba(255,0,0,0.2); color: #ff6b6b; }
+        .header h1 { font-size: 36px; background: linear-gradient(135deg, #6c63ff, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header p { color: #888; margin-top: 5px; font-size: 14px; }
         
         .stats {
             display: flex;
             justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .stats span { color: #888; font-size: 14px; }
+        .stats strong { color: white; font-size: 18px; }
+        .stats .total strong { color: #6c63ff; }
+        .stats .active strong { color: #51cf66; }
+        
+        .date-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
             padding: 10px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+        }
+        .date-selector button {
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .date-selector button:hover { background: rgba(108,99,255,0.3); transform: translateY(-2px); }
+        .date-selector button.active { background: #6c63ff; border-color: #6c63ff; box-shadow: 0 4px 15px rgba(108,99,255,0.3); }
+        .date-selector button.today { border-color: #51cf66; }
+        .date-selector button.today.active { background: #51cf66; border-color: #51cf66; }
+        
+        .key-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .key-grid::-webkit-scrollbar { width: 6px; }
+        .key-grid::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .key-grid::-webkit-scrollbar-thumb { background: #6c63ff; border-radius: 10px; }
+        
+        .key-item {
+            padding: 12px 10px;
             background: rgba(255,255,255,0.05);
             border-radius: 10px;
-            margin-bottom: 15px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+            user-select: none;
         }
-        .stats span { font-size: 13px; color: #888; }
-        .stats strong { color: white; }
+        .key-item:hover { transform: scale(1.05); background: rgba(108,99,255,0.2); border-color: #6c63ff; box-shadow: 0 4px 20px rgba(108,99,255,0.2); }
+        .key-item:active { transform: scale(0.95); }
+        .key-item .key-code { font-weight: bold; font-size: 14px; letter-spacing: 0.5px; }
+        .key-item .key-status { font-size: 10px; margin-top: 4px; display: block; }
+        .key-item .key-status.available { color: #51cf66; }
+        .key-item .key-status.used { color: #ff6b6b; }
+        .key-item.used { opacity: 0.4; border-color: #ff6b6b; }
+        .key-item .copy-hint { font-size: 10px; color: #666; margin-top: 2px; display: block; }
         
-        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
-        .empty-state .icon { font-size: 48px; margin-bottom: 10px; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #666; grid-column: 1 / -1; }
+        .empty-state .icon { font-size: 64px; margin-bottom: 15px; }
+        .loading-state { text-align: center; padding: 60px 20px; color: #888; grid-column: 1 / -1; }
+        .loading-state .spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #6c63ff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
         .api-info {
             margin-top: 20px;
@@ -131,206 +124,98 @@
             font-size: 12px;
             color: #6c63ff;
         }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #6c63ff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-danger { background: #ff6b6b; }
+        .btn-danger:hover { background: #ff4444; }
+        .btn-success { background: #51cf66; }
+        .btn-success:hover { background: #40c057; }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+        .toast.success { border-left: 4px solid #51cf66; }
+        .toast.error { border-left: 4px solid #ff6b6b; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🔑 BEAR KEY SYSTEM</h1>
-            <p>Tạo key và kiểm tra key</p>
+            <p>📅 Key mới mỗi ngày - Click vào key để copy</p>
         </div>
 
         <div class="stats">
-            <span>📊 Tổng key: <strong id="totalKeys">0</strong></span>
-            <span>🟢 Còn hạn: <strong id="activeKeys">0</strong></span>
-            <span>🔴 Hết hạn: <strong id="expiredKeys">0</strong></span>
+            <span class="total">📊 Tổng key: <strong id="totalKeys">0</strong></span>
+            <span class="active">🟢 Còn trống: <strong id="availableKeys">0</strong></span>
+            <span class="expired">🔴 Đã dùng: <strong id="usedKeys">0</strong></span>
         </div>
 
-        <div class="input-group">
-            <input type="text" id="keyInput" placeholder="Nhập key để kiểm tra..." onkeydown="if(event.key==='Enter') checkKey()">
-            <button class="btn btn-primary" onclick="checkKey()">🔍 Kiểm tra</button>
+        <div class="date-selector" id="dateSelector">
+            <!-- Nút ngày sẽ được tạo từ JavaScript -->
         </div>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <button class="btn btn-success" onclick="generateKey()" style="flex:1;">🎲 Tạo Key (7 ngày)</button>
-            <button class="btn btn-danger" onclick="clearAllKeys()" style="flex:0.5;">🗑️ Xóa hết</button>
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+            <button class="btn btn-success" onclick="refreshKeys()">🔄 Refresh</button>
+            <button class="btn" onclick="copyAllKeys()">📋 Copy tất cả</button>
         </div>
 
-        <div id="result" class="result"></div>
-
-        <h3 style="margin: 20px 0 10px; font-size: 16px; color: #888;">📋 Danh sách key</h3>
-        <div id="keyList" class="key-list">
-            <div class="empty-state">
-                <div class="icon">🔑</div>
-                <p>Chưa có key nào</p>
+        <div id="keyGrid" class="key-grid">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px;">Đang tải danh sách key...</p>
             </div>
         </div>
 
         <div class="api-info">
-            <div class="label">🔗 API cho Roblox:</div>
+            <div class="label">🔗 API cho Roblox (kiểm tra key):</div>
             <div class="api-link-box" id="apiLink">Đang tải...</div>
+            <button class="btn" onclick="copyApiLink()" style="margin-top: 10px;">📋 Copy</button>
         </div>
     </div>
 
+    <!-- Toast thông báo -->
+    <div id="toast" class="toast"></div>
+
     <script>
-        // ===== XỬ LÝ API CHO ROBLOX (PHẢI ĐẶT Ở ĐẦU) =====
-        (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const checkKey = urlParams.get('key');
-            
-            if (checkKey) {
-                let keys = JSON.parse(localStorage.getItem('bear_keys')) || {};
-                const now = new Date();
-                let result = 'invalid';
-                
-                if (keys[checkKey]) {
-                    const expiry = new Date(keys[checkKey].expiry);
-                    if (now <= expiry) {
-                        result = 'valid';
-                    }
-                }
-                
-                document.body.innerHTML = result;
-                document.body.style.display = 'flex';
-                document.body.style.justifyContent = 'center';
-                document.body.style.alignItems = 'center';
-                document.body.style.height = '100vh';
-                document.body.style.background = '#0a0a1a';
-                document.body.style.color = '#51cf66';
-                document.body.style.fontSize = '32px';
-                document.body.style.fontFamily = 'monospace';
-                document.body.style.fontWeight = 'bold';
-                return;
-            }
-        })();
+        // ===== CẤU HÌNH =====
+        const KEYS_URL = 'https://raw.githubusercontent.com/Huyyeumy/Website-/refs/heads/main/Keys.json';
+        let keysData = {};
+        let currentDate = '';
+        let usedKeys = JSON.parse(localStorage.getItem('used_keys') || '{}');
 
-        // ===== QUẢN LÝ KEY =====
-        let keys = JSON.parse(localStorage.getItem('bear_keys')) || {};
-
-        function saveKeys() {
-            localStorage.setItem('bear_keys', JSON.stringify(keys));
-            updateUI();
+        // ===== HIỂN THỊ TOAST =====
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show ' + type;
+            setTimeout(() => { toast.className = 'toast'; }, 3000);
         }
 
-        function generateKey() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';  // Bỏ O, I, 0, 1
-            let key = '';
-            for (let i = 0; i < 10; i++) {
-                key += chars[Math.floor(Math.random() * chars.length)];
-            }
-            
-            const expiry = new Date();
-            expiry.setDate(expiry.getDate() + 7);
-            
-            keys[key] = {
-                created: new Date().toISOString(),
-                expiry: expiry.toISOString(),
-                used: false
-            };
-            
-            saveKeys();
-            showResult('✅ Đã tạo key: <strong>' + key + '</strong><br>⏰ Hết hạn: ' + formatDate(expiry), 'success');
-            
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(key);
-            }
-            
-            return key;
+        // ===== LƯU KEY ĐÃ DÙNG =====
+        function saveUsedKeys() {
+            localStorage.setItem('used_keys', JSON.stringify(usedKeys));
         }
-
-        function checkKey() {
-            const input = document.getElementById('keyInput');
-            const key = input.value.trim().toUpperCase();
-            
-            if (!key) {
-                showResult('⚠ Vui lòng nhập key!', 'error');
-                return;
-            }
-            
-            if (!keys[key]) {
-                showResult('❌ Key <strong>' + key + '</strong> không tồn tại!', 'error');
-                return;
-            }
-            
-            const now = new Date();
-            const expiry = new Date(keys[key].expiry);
-            
-            if (now > expiry) {
-                showResult('⏰ Key <strong>' + key + '</strong> đã hết hạn!', 'error');
-                return;
-            }
-            
-            showResult('✅ Key <strong>' + key + '</strong> hợp lệ!', 'success');
-        }
-
-        function formatDate(date) {
-            return date.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-        }
-
-        function showResult(message, type) {
-            const result = document.getElementById('result');
-            result.className = 'result ' + type;
-            result.innerHTML = message;
-            setTimeout(() => { result.className = 'result'; }, 5000);
-        }
-
-        function clearAllKeys() {
-            if (confirm('Xóa tất cả key?')) {
-                keys = {};
-                saveKeys();
-                showResult('🗑️ Đã xóa tất cả key!', 'info');
-            }
-        }
-
-        function updateUI() {
-            const keyList = document.getElementById('keyList');
-            const totalKeys = Object.keys(keys).length;
-            
-            document.getElementById('totalKeys').textContent = totalKeys;
-            
-            const now = new Date();
-            let active = 0, expired = 0;
-            
-            if (totalKeys === 0) {
-                keyList.innerHTML = '<div class="empty-state"><div class="icon">🔑</div><p>Chưa có key nào</p></div>';
-                document.getElementById('activeKeys').textContent = '0';
-                document.getElementById('expiredKeys').textContent = '0';
-                return;
-            }
-            
-            let html = '';
-            for (const [key, data] of Object.entries(keys)) {
-                const expiry = new Date(data.expiry);
-                const isExpired = now > expiry;
-                
-                if (isExpired) expired++;
-                else active++;
-                
-                html += `
-                    <div class="key-item ${isExpired ? 'expired' : ''}">
-                        <div>
-                            <div class="key-code">${key}</div>
-                            <div class="key-info">📅 Hết hạn: ${formatDate(expiry)}</div>
-                        </div>
-                        <span class="key-status ${isExpired ? 'expired' : 'active'}">
-                            ${isExpired ? '🔴 Hết hạn' : '🟢 Còn hạn'}
-                        </span>
-                    </div>
-                `;
-            }
-            
-            keyList.innerHTML = html;
-            document.getElementById('activeKeys').textContent = active;
-            document.getElementById('expiredKeys').textContent = expired;
-        }
-
-        function updateApiLink() {
-            const link = window.location.href.split('?')[0] + '?key=YOUR_KEY_HERE';
-            document.getElementById('apiLink').textContent = link;
-        }
-
-        updateUI();
-        updateApiLink();
-    </script>
-</body>
-</html>
+        
