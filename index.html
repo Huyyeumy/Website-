@@ -62,7 +62,6 @@
         .btn-success:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(81,207,102,0.3); }
         .btn-danger { background: linear-gradient(135deg, #ff6b6b, #ff8e8e); color: white; }
         .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,107,107,0.3); }
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
         
         .result {
             padding: 15px;
@@ -168,13 +167,43 @@
         </div>
 
         <div class="api-info">
-            <div class="label">🔗 API cho Roblox (copy link này vào script):</div>
+            <div class="label">🔗 API cho Roblox:</div>
             <div class="api-link-box" id="apiLink">Đang tải...</div>
-            <button class="btn btn-primary btn-sm" onclick="copyApiLink()" style="margin-top: 10px;">📋 Copy link API</button>
         </div>
     </div>
 
     <script>
+        // ===== XỬ LÝ API CHO ROBLOX (PHẢI ĐẶT Ở ĐẦU) =====
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const checkKey = urlParams.get('key');
+            
+            if (checkKey) {
+                let keys = JSON.parse(localStorage.getItem('bear_keys')) || {};
+                const now = new Date();
+                let result = 'invalid';
+                
+                if (keys[checkKey]) {
+                    const expiry = new Date(keys[checkKey].expiry);
+                    if (now <= expiry) {
+                        result = 'valid';
+                    }
+                }
+                
+                document.body.innerHTML = result;
+                document.body.style.display = 'flex';
+                document.body.style.justifyContent = 'center';
+                document.body.style.alignItems = 'center';
+                document.body.style.height = '100vh';
+                document.body.style.background = '#0a0a1a';
+                document.body.style.color = '#51cf66';
+                document.body.style.fontSize = '32px';
+                document.body.style.fontFamily = 'monospace';
+                document.body.style.fontWeight = 'bold';
+                return;
+            }
+        })();
+
         // ===== QUẢN LÝ KEY =====
         let keys = JSON.parse(localStorage.getItem('bear_keys')) || {};
 
@@ -184,7 +213,7 @@
         }
 
         function generateKey() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';  // Bỏ O, I, 0, 1
             let key = '';
             for (let i = 0; i < 10; i++) {
                 key += chars[Math.floor(Math.random() * chars.length)];
@@ -295,55 +324,13 @@
             document.getElementById('expiredKeys').textContent = expired;
         }
 
-        // ===== API CHO ROBLOX =====
-        function handleApiRequest() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const checkKey = urlParams.get('key');
-            
-            if (checkKey) {
-                const now = new Date();
-                let result = 'invalid';
-                
-                if (keys[checkKey]) {
-                    const expiry = new Date(keys[checkKey].expiry);
-                    if (now <= expiry) {
-                        result = 'valid';
-                    }
-                }
-                
-                document.body.innerHTML = result;
-                document.body.style.display = 'flex';
-                document.body.style.justifyContent = 'center';
-                document.body.style.alignItems = 'center';
-                document.body.style.height = '100vh';
-                document.body.style.background = '#0a0a1a';
-                document.body.style.color = '#51cf66';
-                document.body.style.fontSize = '32px';
-                document.body.style.fontFamily = 'monospace';
-                document.body.style.fontWeight = 'bold';
-                return true;
-            }
-            return false;
-        }
-
         function updateApiLink() {
             const link = window.location.href.split('?')[0] + '?key=YOUR_KEY_HERE';
             document.getElementById('apiLink').textContent = link;
         }
 
-        function copyApiLink() {
-            const link = document.getElementById('apiLink').textContent;
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(link);
-                showResult('📋 Đã copy link API!', 'success');
-            }
-        }
-
-        // ===== KHỞI TẠO =====
-        if (!handleApiRequest()) {
-            updateUI();
-            updateApiLink();
-        }
+        updateUI();
+        updateApiLink();
     </script>
 </body>
 </html>
