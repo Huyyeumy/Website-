@@ -128,17 +128,15 @@
             color: #f87171;
             font-weight: 600;
         }
-        .timer-info {
-            font-size: 13px;
-            color: #64748b;
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: none;
         }
-        .timer-info span {
-            color: #facc15;
-            font-weight: 600;
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: none;
         }
     </style>
 </head>
@@ -163,10 +161,6 @@
         </button>
 
         <div class="copy-hint" id="copyHint">💡 Click vào key để copy</div>
-
-        <div class="timer-info" id="timerInfo">
-            ⏰ Key mới lúc: <span id="nextResetTime">--:--</span>
-        </div>
     </div>
 
     <script>
@@ -176,7 +170,6 @@
         const keyValue = document.getElementById('keyValue');
         const copyHint = document.getElementById('copyHint');
         const statusMsg = document.getElementById('statusMsg');
-        const nextResetTime = document.getElementById('nextResetTime');
 
         // ===== CẤU HÌNH =====
         const STORAGE_KEY = 'daily_key_data';
@@ -184,8 +177,6 @@
 
         // ===== STATE =====
         let keysData = null;
-        let keyData = null;
-        let countdownInterval = null;
 
         // ===== LẤY NGÀY HIỆN TẠI =====
         function getToday() {
@@ -196,23 +187,6 @@
         function getCurrentHourMinute() {
             const now = new Date();
             return now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
-        }
-
-        // ===== TÍNH THỜI GIAN ĐẾN GIỜ CHẴN TIẾP THEO =====
-        function getNextHourReset() {
-            const now = new Date();
-            const next = new Date(now);
-            next.setHours(now.getHours() + 1, 0, 0, 0);
-            return next;
-        }
-
-        // ===== TÍNH THỜI GIAN ĐẾN 00:00 =====
-        function getNextMidnight() {
-            const now = new Date();
-            const next = new Date(now);
-            next.setDate(now.getDate() + 1);
-            next.setHours(0, 0, 0, 0);
-            return next;
         }
 
         // ===== LẤY KEY TỪ FILE JSON =====
@@ -240,13 +214,13 @@
 
         // ===== LƯU KEY =====
         function saveKey(key) {
-            keyData = {
+            const data = {
                 key: key,
                 date: getToday(),
                 hour: getCurrentHourMinute()
             };
             try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(keyData));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             } catch (e) {}
         }
 
@@ -269,7 +243,6 @@
             const today = getToday();
             const currentHour = getCurrentHourMinute();
 
-            // Kiểm tra ngày và giờ
             if (saved.date !== today) return false;
             if (saved.hour !== currentHour) return false;
 
@@ -376,42 +349,6 @@
             document.body.removeChild(textarea);
         }
 
-        // ===== CẬP NHẬT ĐỒNG HỒ ĐẾM NGƯỢC =====
-        function updateCountdown() {
-            const now = new Date();
-            const nextHour = getNextHourReset();
-            const nextMidnight = getNextMidnight();
-
-            // Nếu còn ít hơn 5 phút đến 00:00 thì ưu tiên hiển thị reset ngày
-            const diffToMidnight = nextMidnight - now;
-            const diffToHour = nextHour - now;
-
-            let targetTime;
-            let label;
-
-            if (diffToMidnight < 600000) { // 10 phút đến 00:00
-                targetTime = nextMidnight;
-                label = 'Reset ngày mới lúc';
-            } else {
-                targetTime = nextHour;
-                label = 'Key mới lúc';
-            }
-
-            const diff = targetTime - now;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            const timeStr = String(hours).padStart(2, '0') + ':' +
-                String(minutes).padStart(2, '0') + ':' +
-                String(seconds).padStart(2, '0');
-
-            const hourStr = String(targetTime.getHours()).padStart(2, '0') + ':' +
-                String(targetTime.getMinutes()).padStart(2, '0');
-
-            nextResetTime.textContent = hourStr + ' (' + timeStr + ')';
-        }
-
         // ===== XỬ LÝ BẤM NÚT GET KEY =====
         getKeyBtn.addEventListener('click', function() {
             if (!keysData) {
@@ -430,7 +367,6 @@
                 return;
             }
 
-            // Tạo key mới
             const newKey = generateKey();
             saveKey(newKey);
             showKey(newKey, true);
@@ -438,25 +374,18 @@
 
         // ===== KHỞI TẠO TRANG =====
         async function init() {
-            // Tải keys.json
             await loadKeysData();
 
-            // Kiểm tra key đã lưu
             if (isKeyValid()) {
                 const saved = loadKey();
                 if (saved) showKey(saved.key, false);
                 else handleNoKey();
             } else {
-                // Xóa key cũ nếu hết hạn
                 if (loadKey()) {
                     localStorage.removeItem(STORAGE_KEY);
                 }
                 handleNoKey();
             }
-
-            // Cập nhật đồng hồ đếm ngược
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
 
             // Kiểm tra reset mỗi phút
             setInterval(function() {
@@ -470,10 +399,8 @@
             // Tải lại keys.json mỗi 10 phút
             setInterval(async function() {
                 const success = await loadKeysData();
-                if (success) {
-                    if (!hasKeyForToday()) {
-                        handleNoKey();
-                    }
+                if (success && !hasKeyForToday()) {
+                    handleNoKey();
                 }
             }, 600000);
         }
